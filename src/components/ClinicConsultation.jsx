@@ -22,51 +22,51 @@ const ClinicConsultation = () => {
     },
     {
       id: 2,
-      profession: "dentist",
+      profession: "Gynecologist/Obstetrician",
       img: '/sp-gynecologist@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Explore for women’s health, pregnancy and infertility treatments"
     },
     {
       id: 3,
-      profession: "dentist",
+      profession: "Dietitian/Nutrition",
       img: '/sp-dietitian@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Get guidance on eating right, weight management and sports nutrition"
     },
     {
       id: 4,
-      profession: "dentist",
+      profession: "Physiotherapist",
       img: '/sp-physiotherapist@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Pulled a muscle? Get it treated by a trained physiotherapist"
     },
     {
       id: 5,
-      profession: "dentist",
+      profession: "General surgeon",
       img: '/sp-general-surgeon@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Need to get operated? Find the right surgeon"
     },
     {
       id: 6,
-      profession: "dentist",
+      profession: "Orthopedist",
       img: '/sp-orthopedist@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "For Bone and Joints issues, spinal injuries and more"
     },
     {
       id: 7,
-      profession: "dentist",
+      profession: "General physician",
       img: '/sp-general-doctor@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Find the right family doctor in your neighborhood"
     },
     {
       id: 8,
-      profession: "dentist",
+      profession: "Pediatrician",
       img: '/sp-pediatrician@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Child Specialists and Doctors for Infant"
     },
     {
       id: 9,
-      profession: "dentist",
+      profession: "Gastroenterologist",
       img: '/sp-gastroenterologist@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Explore for issues related to digestive system, liver and pancreas"
     },
   ];
   const router = useRouter();
@@ -98,17 +98,16 @@ const ClinicConsultation = () => {
             swiper.navigation.update();
           }}
           className="w-full"
-          spaceBetween={10}
           slidesPerView={4}
         >
           {content?.map((item, index) => (
             <SwiperSlide key={index} onClick={() => { router.push(`/`) }}>
               <div className="min-h-screen bg-gray-100">
-                <div className="bg-white mx-auto shadow-lg rounded-lg hover:shadow-xl transition duration-200 max-w-sm">
+                <div className="bg-white mx-auto shadow-sm rounded-lg hover:shadow-sm transition duration-200 max-w-sm">
                   <img className="rounded-t-lg" src={item.img} alt="" />
                   <div className="py-4 px-1">
-                    <h1 className="hover:cursor-pointer mt-2 text-gray-900 font-bold text-xl tracking-tight text-blue-300 text-left">{item.profession}</h1>
-                    <p className="hover:cursor-pointer text-gray-600 leading-4 text-left">{item.des} </p>
+                    <h1 className="hover:cursor-pointer mt-2 text-gray-900 font-bold text-ml tracking-tight text-blue-300 text-left">{item.profession}</h1>
+                    <p className=" text-sm hover:cursor-pointer text-gray-600 leading-4 text-left">{item.des} </p>
                   </div>
                 </div>
               </div>
@@ -129,33 +128,32 @@ const ClinicConsultation = () => {
           </svg>
         </div>
       </div>
+
+      <style jsx>{`
+        .swiper-button-prev-custom,
+        .swiper-button-next-custom {
+          position: absolute;
+          top:33%;
+          transform: translateY(-50%);
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color:black;
+          border-radius: 50%;
+          z-index: 10;
+          cursor: pointer;
+        }
+        .swiper-button-prev-custom {
+          left: -20px; /* Adjust as needed */
+        }
+        .swiper-button-next-custom {
+          right: -20px; /* Adjust as needed */
+        }
+      `}</style>
     </div>
   );
 };
 
 export default ClinicConsultation;
-
-// Add CSS for custom navigation buttons
-<style jsx>{`
-  .swiper-button-prev-custom,
-  .swiper-button-next-custom {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: black;
-    border-radius: 50%;
-    z-index: 10;
-    cursor: pointer;
-  }
-  .swiper-button-prev-custom {
-    left: -60px; /* Adjust as needed */
-  }
-  .swiper-button-next-custom {
-    right: -60px; /* Adjust as needed */
-  }
-`}</style>

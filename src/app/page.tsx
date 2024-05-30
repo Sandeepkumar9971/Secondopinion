@@ -7,8 +7,6 @@ import Footer from "@/components/Footer";
 import ClinicConsultation from "@/components/ClinicConsultation";
 import Articals from "@/components/Articals";
 import Usersays from "@/components/Usersays";
-import 'swiper/css';
-import 'swiper/css/navigation';
 
 const doctorList = [
   {

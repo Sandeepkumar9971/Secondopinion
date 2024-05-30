@@ -32,7 +32,7 @@ function Header() {
         {
             id: 1,
             name: "Find doctor",
-            path: '/'
+            path: '/find_doctor'
         },
         {
             id: 2,

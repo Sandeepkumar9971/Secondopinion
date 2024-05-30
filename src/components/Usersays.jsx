@@ -20,11 +20,11 @@ const content = [
   },
 ];
 
-const Usersays = () => {
+const Usersays = ({title=true,usename=true}) => {
   return (
     <section className="flex justify-center py-12 mt-5">
       <div className="lg:mx-auto max-w-5xl mx-[1.5rem] w-full">
-        <h1 className="text-center text-3xl font-bold mb-8">  What our users have to say</h1>
+      {title && <h1 className="text-center text-3xl font-bold mb-8">  What our users have to say</h1>}
         <div className="relative flex justify-center">
           <Swiper
             modules={[Navigation]}
@@ -37,7 +37,7 @@ const Usersays = () => {
               return (
                 <SwiperSlide className="flex justify-center" key={index}>
                   <div className="bg-white shadow-sm rounded-lg p-9 max-w-sm w-full mt-3">
-                    <h1 className="font-bold text-[1.6rem] mb-4"> <AccountCircleIcon/>{p.name}</h1>
+                  {usename && <h1 className="font-bold text-[1.6rem] mb-4"> <AccountCircleIcon/>{p.name}</h1>}  
                     <p>{p.info}</p>
                   </div>
                 </SwiperSlide>

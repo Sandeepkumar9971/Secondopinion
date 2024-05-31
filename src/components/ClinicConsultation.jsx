@@ -9,8 +9,9 @@ import { useRef } from 'react';
 // import { Swiper, SwiperSlide } from 'swiper/react';
 // import { FreeMode, Pagination } from 'swiper/modules';
 import { Navigation } from 'swiper/modules';
+import { Button } from '@material-tailwind/react';
 
-const ClinicConsultation = () => {
+const ClinicConsultation = ({sellbtn=false}) => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const content = [
@@ -75,10 +76,18 @@ const ClinicConsultation = () => {
     <div className='p-5 h-auto'>
       <div className="">
         <div className="flex items-center justify-between">
-          <div>
+          <div className='flex-2/3'>
             <h2 className='text-3xl '>Book an appointment for an in-clinic consultation</h2>
             <h2>Find experienced doctors across all specialties</h2>
           </div>
+          {
+            sellbtn &&  <div className='flex-1/3'>
+            <Button className='border border-black bg-transparent text-black hover-none' onClick={() => alert('hello')}>
+              See All Symptoms
+            </Button>
+          </div>
+          }
+         
         </div>
       </div>
 

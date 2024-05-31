@@ -133,7 +133,9 @@ const doctorList = [
 export default function Home() {
   return (
     <div>
-      <div className="md:px-20">
+      <div 
+      // className="md:px-20"
+      >
         {/* Header */}
         <Header></Header>
         {/* Hero Section */}

@@ -37,18 +37,14 @@ function Header() {
         {
             id: 2,
             name: "Video Consult",
-            path: '/explore'
+            path: '/video_consult'
         },
         {
             id: 3,
             name: "Help Security",
-            path: '/explore'
+            path: '/help_security'
         },
-        // {
-        //     id: 3,
-        //     name: "Contact Us",
-        //     path: '/contact-us'
-        // }
+       
     ]
 
     // Render header for authenticated users

@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
         const { username, password } = reqBody;
 
         // Check if user exists
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ username});
         if (!user) {
             // Return a JSON response indicating that the user does not exist with a bad request status code (400)
             return NextResponse.json({ message: "User does not exist, please check your username", success: false }, { status: 400 });

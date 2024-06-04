@@ -10,6 +10,7 @@ import { useRef } from 'react';
 // import { FreeMode, Pagination } from 'swiper/modules';
 import { Navigation } from 'swiper/modules';
 import { Button } from '@material-tailwind/react';
+import { Pagination } from 'swiper/modules';
 
 const ClinicConsultation = ({sellbtn=false}) => {
   const prevRef = useRef(null);

@@ -12,7 +12,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import FolderIcon from '@mui/icons-material/Folder';
 import { Button } from '@/components/ui/button';
 import Usersays from '@/components/Usersays';
-// import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 import { Chip } from "@material-tailwind/react"
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import FavoriteIcon from '@mui/icons-material/Favorite';

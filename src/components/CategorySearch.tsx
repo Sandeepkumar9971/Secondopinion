@@ -42,7 +42,8 @@ function CategorySearch() {
  
   return (
     <div className='mb-10 items-center px-5 flex flex-col gap-3'>
-      <Searchbar/>
+     <h2 className='text-3xl text-left'>Search Best <span className='text-blue-800 text-bold'>SPECIALITY DOCTOR</span></h2>
+      <Searchbar />
       <div className='w-full mt-5 display-flex justiy-center '>
         <div className='flex flex-1 justify-between'>
           <div className='flex-2/3'>

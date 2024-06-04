@@ -133,7 +133,7 @@ function LoginSign({}: Props) {
                     {/* Card for containing registration form */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Join MedNexa</CardTitle>
+                            <CardTitle>Join <span style={{color:'#22A0D8'}}>SECOND OPINION</span></CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2">
                             {/* Input fields for user details */}

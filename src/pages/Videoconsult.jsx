@@ -13,6 +13,8 @@ import '@/components/style.css'   //'./style.css'
 import { Pagination } from 'swiper/modules';
 import Searchbar from '@/components/Searchbar'
 import ClinicConsultation from '@/components/ClinicConsultation';
+import { Collapse } from 'react-collapse';
+
 
 const categoryList = [
   {
@@ -118,7 +120,54 @@ const testimonials = [
     image: '/testimonial-default-women-v1.png',
   },
 ];
+
+const FAQdata = [
+  {
+    id: 1,
+    ques: 'What is online doctor consultation?',
+    sol: 'Online doctor consultation or online medical consultation is a method to connect patients and doctors virtually. It is a convenient and easy way to get online doctor advice using doctor apps or telemedicine apps or platforms, and the internet.'
+  },
+  {
+    id: 2,
+    ques: 'How do I start online consultation with doctors on Practo?',
+    sol: `Starting an online doctor consultation is very simple on Practo. Follow these 4 simple steps:
+1. Choose your health concern
+2. Connect with a doctor within 2 minutes
+3. Ask your queries to the doctor via audio or video call
+4. Get a valid online doctor prescription and a 3-day free online doctor consultation`
+  },
+  {
+    id: 3,
+    ques: 'Are your online doctors qualified?',
+    sol: 'We follow a strict verification process for every doctor providing online medical services on Practo. Our team manually verifies necessary documents, registrations, and certifications for every doctor.'
+  },
+  {
+    id: 4,
+    ques: 'Is online doctor consultation safe and secured on Practo?',
+    sol: 'The privacy of our patients is critical to us, and thus, we are compliant with industry standards like ISO 27001. Rest assured that your online consultation with a doctor is completely safe and secured with 256-bit encryption'
+  },
+  {
+    id: 5,
+    ques: 'What happens if I don’t get a response from a doctor?',
+    sol: 'In the unlikely event that an online doctor does not respond, you will be entitled to a 100% refund.'
+  },
+  {
+    id: 6,
+    ques: 'Can I do a free online doctor consultation on Practo?',
+    sol: 'Avail a free online consultation with top doctors in India during the India Health Hour. We have the free questions service available on our health app only. Ask a question and get free online medical advice within 24 to 48 hours.'
+  },
+]
+
+
 const Videoconsult = () => {
+
+  const [openIndexes, setOpenIndexes] = useState([false, false, false, false, false, false]);
+
+  const toggleCollapse = (index) => {
+    setOpenIndexes(
+      openIndexes.map((isOpen, i) => (i === index ? !isOpen : isOpen))
+    );
+  };
   return (
     <div>
 
@@ -316,8 +365,11 @@ const Videoconsult = () => {
         <div className="doctors-container">
           <h2 className="title">Our Doctors</h2>
           <Swiper
-            spaceBetween={4}
-            slidesPerView={4}
+            slidesPerView={3}
+            spaceBetween={30}
+            pagination={{
+              clickable: true,
+            }}
             breakpoints={{
               640: {
                 slidesPerView: 2,
@@ -332,9 +384,10 @@ const Videoconsult = () => {
                 spaceBetween: 40,
               },
             }}
-            navigation
+            modules={[Pagination]}
             className="mySwiper"
           >
+
             {doctors.map((doctor, index) => (
               <SwiperSlide key={index}>
                 <div className="doctor-card">
@@ -596,29 +649,30 @@ const Videoconsult = () => {
       </div>
       {/***********************  Test monial********************* */}
       <div className="testimonials">
-        <h2 className='text-3xl'>What our users say about their online consultation experience</h2>
+        <h2 className='text-3xl'>What our users say about their online consultation experience</h2><br/>
         <Swiper
-          spaceBetween={10}
-          slidesPerView={3}
-          loop={true}
-          pagination={{ clickable: true }}
-          navigation
-        >
+            slidesPerView={3}
+            spaceBetween={30}
+            pagination={{
+              clickable: true,
+            }}
+            modules={[Pagination]}
+            className="mySwiper "
+          >
           {testimonials.map((testimonial, index) => (
             <SwiperSlide key={index}>
               <div className="testimonial">
                 <div className='test_name'>
                   <img src={testimonial.image} alt={testimonial.name} className="testimonial-img" />
-                  <h3 className='mt-3 mx-2'>{testimonial.name}</h3>
+                  <h3 className='text-sm text-bold mt-3 mx-2'>{testimonial.name}</h3>
                 </div>
-                <p className='text-left'>{testimonial.message}</p>
+                <p className=' text-sm text-left'>{testimonial.message}</p>
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
         <style jsx>{`
-        .testimonials {
-
+        .testimonials {          
           text-align: center;
           padding: 40px;
           background: #f8f9fa;
@@ -653,25 +707,83 @@ const Videoconsult = () => {
       `}</style>
       </div>
 
- {/***********************   health concerns ********************* */}
+      {/***********************   FAQs ********************* */}
+      <div>
+        <h2 className='text-3xl'>FAQs</h2>
+        <div className="grid-container">
+          {FAQdata?.map((fq, index) => (
+            <div key={index} className="grid-item">
+              <button onClick={() => toggleCollapse(index)}>
+                {fq.ques}
+              </button>
+              <Collapse isOpened={openIndexes[index]}>
+                <div className="collapse-content">
+                  {fq.sol}
+                </div>
+              </Collapse>
+            </div>
+          ))}
+          <style jsx>{`
+        .grid-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          padding: 20px;
+        }
+        .grid-item {
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          padding: 10px;
+          text-align: center;
+        }
+        .collapse-content {
+          margin-top: 10px;
+          padding: 10px;
+          border-top: 1px solid #eee;
+        }
+        @media (max-width: 768px) {
+          .grid-container {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+        </div>
+      </div>
+
+      {/***********************   health concerns ********************* */}
       <div className="bg-gray-900 text-white py-10">
         <div className="container mx-auto">
           <div className="flex flex-row gap-4 justify-between p-5 ">
-            <div className="flex flex-col ">
+            <div className="flex flex-col gap-6">
               <h2 className="text-2xl font-large">Still delaying your health concerns ?</h2>
               <p className="text-sl">Connect with India's top doctors online</p>
             </div>
-            <div className="flex flex-col items-center">
-            <Button className='bg-blue-800'>Consult Now</Button>
+            <div className="flex flex-col mt-5">
+              <Button style={{ background: '#58B0F6' }}>Consult Now</Button>
             </div>
-           
+
 
           </div>
         </div>
       </div>
+
+<div className='flex-1 p-5'>
+  <p className='text-sm'>Looking for a trusted & secured online dr consultation in India?</p><br/>
+  <p className='text-sm leading-relaxed'>
+ 
+Consult a doctor online on Practo for any health concern. Our pool of over 20,000 trusted doctors across 25+ specialties will ensure all your health queries are answered. You can get online dr advice from a Psychiatrist, Dermatologist, Gynecologist, Sexologist, Pediatrician, Cardiologist, Neurologist, Gastroenterologist, Urologist, Endocrinologist, Dentist, Psychologist, and many more. Video consultation with a doctor is available only on Practo's online doctor app.
+Practo serves customers in the following cities: Bangalore, Mumbai, Delhi, Kolkata, Hyderabad, Chennai, Pune, Ahmedabad, Gurgaon and Ghaziabad.
+
+Recently Answered Questions: Melatonin tolerance | Period after ipill | Skin lightening | Stapler Circummsion | Chayote squash daily intake | Delayed eruption | Diastasis Recti 7 finger gap | Eco report
+
+Topics: Looking for weight gain tips? | Worried about chest pain? | Want to get rid of dark circles? | How to use prega news kit? | Need some weight loss advice? | Work, family or relationship stress? | Looking to improve digestion? | Painful kidney stones? | Need some sexual advice? | Want to learn how to last longer? | Seek help for lower back pain | Need some advice for irregular periods? | Ask how you can relieve throat pain | Need help with frequent urination? | Have trouble breathing? | Need some dental advice? | Want to get rid of acne scars? | Stomach pain bothering you? | Doubts about periods?
+
+Specialities: Ask A Psychiatrist | Ask A Dermatologist | Ask A Sexologist | Ask A Gynecologist | Ask A General Physician Doctor | Ask A Pediatrician Doctor | Ask An Ear Nose Throat Doctor | Ask A Kidney Urine Doctor | Ask An Orthopedic Doctor | Ask A Neurologist Doctor
+  </p>
+</div>
+
+
     </div>
-
-
   );
 }
 

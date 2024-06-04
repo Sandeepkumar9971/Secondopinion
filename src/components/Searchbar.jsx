@@ -1,39 +1,42 @@
 import React, { useState } from 'react';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
+import { useRouter } from 'next/navigation';
 
 const locations = [
-  'Dwarka',
-  'Rohini',
-  'Pitampura',
-  'Janakpuri',
-  'Saket',
-  'Lajpat Nagar',
-  'Paschim Vihar',
+  { id: 1, name: 'Dwarka' },
+  { id: 2, name: 'Rohini' },
+  { id: 3, name: 'Pitampura' },
+  { id: 4, name: 'Janakpuri' },
+  { id: 5, name: 'Saket' },
+  { id: 6, name: 'Lajpat Nagar' },
+  { id: 7, name: 'Paschim Vihar' },
 ];
 
 const specialties = [
-    'Dentist',
-    'Gynecologist/obstetrician',
-    'General Physician',
-    'Dermatologist',
-    'Ear-nose-throat (ENT) Specialist',
-    'Homoeopath',
-    'Ayurveda',
-    'Cardiologist',
-    'Orthopedic Surgeon',
-  ];
+  { id: 1, name: 'Dentist' },
+  { id: 2, name: 'Gynecologist-obstetrician' },
+  { id: 3, name: 'General Physician' },
+  { id: 4, name: 'Dermatologist' },
+  { id: 5, name: 'Ear-nose-throat (ENT) Specialist' },
+  { id: 6, name: 'Homoeopath' },
+  { id: 7, name: 'Ayurveda' },
+  { id: 8, name: 'Cardiologist' },
+  { id: 9, name: 'Orthopedic Surgeon' },
+];
 
-  const doctorsAndHospitals = [
-    'Dr. John Doe - Cardiologist',
-    'Dr. Jane Smith - Orthopedic Surgeon',
-    'City Hospital',
-    'Community Health Center',
-    'Lakeview Dental Clinic',
-  ];
+const doctorsAndHospitals = [
+  { id: 1, name: 'Dr. John Doe - Cardiologist' },
+  { id: 2, name: 'Dr. Jane Smith - Orthopedic Surgeon' },
+  { id: 3, name: 'City Hospital' },
+  { id: 4, name: 'Community Health Center' },
+  { id: 5, name: 'Lakeview Dental Clinic' },
+];
 
-const Searchbar = () => {
-  const [location, setLocation] = useState('Delhi');
-  const [searchTerm, setSearchTerm] = useState('');
+const Searchbar = ({searchvalue}) => {
+  console.log(searchvalue)
+  const router = useRouter()
+  const [location, setLocation] = useState(searchvalue?.doc || 'Delhi');
+  const [searchTerm, setSearchTerm] = useState(searchvalue?.spec || '');
   const [filteredSpecialties, setFilteredSpecialties] = useState(specialties);
   const [filteredLocations, setFilteredLocations] = useState(locations);
   const [showLocationList, setShowLocationList] = useState(false);
@@ -44,17 +47,16 @@ const Searchbar = () => {
     setSearchTerm(term);
     setShowSpecialtyList(true);
     setShowLocationList(false);
-
     if (term.length > 0) {
       const filteredSpecialties = specialties.filter((specialty) =>
-        specialty.toLowerCase().includes(term.toLowerCase())
+        specialty.name.toLowerCase().includes(term.toLowerCase())
       );
 
       const filteredDoctorsAndHospitals = doctorsAndHospitals.filter((result) =>
-        result.toLowerCase().includes(term.toLowerCase())
+        result.name.toLowerCase().includes(term.toLowerCase())
       );
       const combinedResults = [...filteredSpecialties, ...filteredDoctorsAndHospitals];
-      setFilteredSpecialties(combinedResults.length > 0 ? combinedResults : ['No results found']);
+      setFilteredSpecialties(combinedResults.length > 0 ? combinedResults : [{ id: 0, name: 'No results found' }]);
     } else {
       setFilteredSpecialties(specialties);
     }
@@ -67,7 +69,7 @@ const Searchbar = () => {
     setShowSpecialtyList(false);
     if (term.length > 0) {
       const filtered = locations.filter(loc =>
-        loc.toLowerCase().includes(term.toLowerCase())
+        loc.name.toLowerCase().includes(term.toLowerCase())
       );
       setFilteredLocations(filtered);
     } else {
@@ -81,7 +83,7 @@ const Searchbar = () => {
   };
 
   const handleLocationClick = (loc) => {
-    setLocation(loc);
+    setLocation(loc.name);
     setShowLocationList(false);
     setShowSpecialtyList(true);
   };
@@ -94,8 +96,15 @@ const Searchbar = () => {
     setShowSpecialtyList(false);
   };
 
+  const handlespecialist = (specialist) =>{
+    console.log(specialist)
+    setSearchTerm(specialist.name);
+    setShowSpecialtyList(false); 
+    router.push(`/searchdoctor/${location}/${specialist.name}`)
+   
+  }
   return (
-    <div className="relative w-full max-w-full   mx-auto mt-10 px-4 sm:px-6 lg:px-8">
+    <div className="relative w-full max-w-full mx-auto mt-10 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center border rounded-lg overflow-hidden shadow-lg">
         <input
           type="text"
@@ -115,7 +124,7 @@ const Searchbar = () => {
         />
         {searchTerm && (
           <button onClick={clearSearch} className="mr-10 ">
-           <DisabledByDefaultIcon/>
+            <DisabledByDefaultIcon />
           </button>
         )}
       </div>
@@ -123,7 +132,9 @@ const Searchbar = () => {
       {showLocationList && (
         <div className="absolute bg-white border rounded-lg shadow-lg w-full mt-1 z-10">
           <div className="flex justify-end p-2">
-            <button onClick={closeLocationList} className="text-gray-500 hover:text-gray-800"><DisabledByDefaultIcon/></button>
+            <button onClick={closeLocationList} className="text-gray-500 hover:text-gray-800">
+              <DisabledByDefaultIcon />
+            </button>
           </div>
           <div
             onClick={() => alert('hello')}
@@ -141,14 +152,14 @@ const Searchbar = () => {
               <span className="mr-2 text-blue-500">Search in entire Delhi</span>
             </div>
           </div>
-          {filteredLocations.map((loc, index) => (
+          {filteredLocations.map((loc) => (
             <div
-              key={index}
+              key={loc.id}
               onClick={() => handleLocationClick(loc)}
               className="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
             >
               <div>
-                <span className="mr-2">📍</span>{loc}
+                <span className="mr-2">📍</span>{loc.name}
               </div>
             </div>
           ))}
@@ -158,16 +169,18 @@ const Searchbar = () => {
       {showSpecialtyList && (searchTerm || location) && (
         <div className="absolute bg-white border rounded-lg shadow-lg w-full mt-1 z-10">
           <div className="flex justify-end p-2">
-            <button onClick={closeSpecialtyList} className="text-gray-500 hover:text-gray-800"><DisabledByDefaultIcon/></button>
+            <button onClick={closeSpecialtyList} className="text-gray-500 hover:text-gray-800">
+              <DisabledByDefaultIcon />
+            </button>
           </div>
-          {filteredSpecialties.map((specialty, index) => (
+          {filteredSpecialties.map((specialty) => (
             <div
-              key={index}
-              onClick={() => { setSearchTerm(specialty); setShowSpecialtyList(false); }}
+              key={specialty.id}
+              onClick={() => {handlespecialist(specialty)}}
               className="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
             >
               <div>
-                <span className="mr-2">🔍</span>{specialty}
+                <span className="mr-2">🔍</span>{specialty.name}
               </div>
               <div className="text-gray-500">SPECIALITY</div>
             </div>

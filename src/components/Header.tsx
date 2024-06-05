@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -11,18 +11,21 @@ import { useRouter } from 'next/navigation'
 function Header() {
     const router = useRouter()
     const { data: session } = useSession()
-   
+    const location = window.location.pathname
+    const [path,setpath] = useState(location)
+
+
     // Function to handle sign out
-    async function onClickSignOut(){
-        try{
+    async function onClickSignOut() {
+        try {
             signOut()
             toast("Logout successful", {
                 action: {
-                  label: "Undo",
-                  onClick: () => console.log("Undo"),
+                    label: "Undo",
+                    onClick: () => console.log("Undo"),
                 },
             })
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     }
@@ -44,22 +47,24 @@ function Header() {
             name: "Help Security",
             path: '/help_security'
         },
-       
+
     ]
 
     // Render header for authenticated users
-    if(session){
+    if (session) {
         return (
             <div className='flex items-center justify-between p-4 shadow-sm'>
                 <div className='flex items-center gap-10' >
-                    <Image  className='cursor-pointer' src="/logo.svg" alt='logo'
+                    <Image className='cursor-pointer' src="/logo.svg" alt='logo'
                         width={180} height={80}
-                        // onClick={()=>{router.push('/')}}
+                    // onClick={()=>{router.push('/')}}
                     />
                     <ul className='md:flex gap-8 hidden'>
-                        {Menu.map((item, index)=>(
+                        {Menu.map((item, index) => (
                             <Link key={index} href={item.path}>
-                                <li className='text-semi-bold hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out'>{item.name}</li>
+                               <li onClick={()=>{setpath(item.path)}} className={`text-semi-bold ${path==item.path && 'text-primary underline'}  hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out hover:underline`}>
+                                {item.name}
+                            </li>
                             </Link>
                         ))}
                     </ul>
@@ -78,18 +83,21 @@ function Header() {
             </div>
         )
     }
-    
+
     // Render header for unauthenticated users
     return (
         <div className='flex items-center justify-between p-4 shadow-sm'>
             <div className='flex items-center gap-10 cursor-pointer'>
-                <Image src="/second_opinion.png" alt='logo' onClick={()=>{router.push('/')}}
-                    width={120} height={120}
+                <Image src="/second_opinion.png" alt='logo' onClick={() => { router.push('/')}}
+                    width={100} height={100}
                 />
                 <ul className='md:flex gap-8 hidden'>
-                    {Menu.map((item, index)=>(
+                    {Menu.map((item, index) => (
                         <Link key={index} href={item.path}>
-                            <li className='hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out'>{item.name}</li>
+                            <li onClick={()=>{setpath(item.path)}} className={`text-semi-bold ${path==item.path && 'text-primary underline'}  hover:text-primary cursor-pointer hover:scale-105 transition-all ease-in-out hover:underline`}>
+                                {item.name}
+                            </li>
+
                         </Link>
                     ))}
                 </ul>

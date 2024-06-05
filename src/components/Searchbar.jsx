@@ -100,7 +100,7 @@ const Searchbar = ({searchvalue}) => {
     console.log(specialist)
     setSearchTerm(specialist.name);
     setShowSpecialtyList(false); 
-    router.push(`/searchdoctor/${location}/${specialist.name}`)
+    router.push(`/searchdoctor/${location}/${specialist.name}`) 
    
   }
   return (

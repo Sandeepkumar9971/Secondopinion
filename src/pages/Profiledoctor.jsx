@@ -6,6 +6,8 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import { Button } from '@/components/ui/button';
+import Searchbar from '@/components/Searchbar';
 
 const Profiledoctor = () => {
   const [showSlots, setShowSlots] = useState(false);
@@ -13,6 +15,8 @@ const Profiledoctor = () => {
   const [expanded, setExpanded] = useState(false);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
+  const [tab, settab] = useState(1)
+
   const dates = ["Today", "Tomorrow", "Wed, 5 Jun"];
   const slots = {
     morning: ["09:00 AM", "10:00 AM", "11:00 AM"],
@@ -100,7 +104,7 @@ const Profiledoctor = () => {
   const Specializations = [
     {
       id: 1,
-      Special:'Orthodontist'
+      Special: 'Orthodontist'
     },
     {
       id: 2,
@@ -121,41 +125,41 @@ const Profiledoctor = () => {
   ]
   const Awards = [
     {
-      id:1,
-      award:'recognised by Dental Council of India as an inspector to inspect dental colleges - 2010'
+      id: 1,
+      award: 'recognised by Dental Council of India as an inspector to inspect dental colleges - 2010'
     },
   ]
-  
+
   const edu = [
     {
-      id:1,
-      name:'BDS - M.R. Ambedkar Dental College and Hospital, 1995'
+      id: 1,
+      name: 'BDS - M.R. Ambedkar Dental College and Hospital, 1995'
     },
     {
-      id:2,
-      name:'MDS - Orthodontics - Bangalore University, 1998'
+      id: 2,
+      name: 'MDS - Orthodontics - Bangalore University, 1998'
     },
   ]
   const Member = [
     {
-      id:1,
-      name:'Indian Dental Association'
+      id: 1,
+      name: 'Indian Dental Association'
     },
     {
-      id:2,
-      name:'Indian Orthodontic Society'
+      id: 2,
+      name: 'Indian Orthodontic Society'
     },
   ]
   const experience = [
     {
-      id:1,
-      name:'Head at All Care Dental Centre'
+      id: 1,
+      name: 'Head at All Care Dental Centre'
     },
   ]
   const Registrations = [
     {
-      id:1,
-      name:'3448A Karnataka State Dental Council, 1995'
+      id: 1,
+      name: '3448A Karnataka State Dental Council, 1995'
     },
   ]
   const handleBookClick = () => {
@@ -182,10 +186,10 @@ const Profiledoctor = () => {
 
   return (
     <div >
+       <Searchbar/>
       <div className="container">
 
-
-       {/* LEFT Selection */}
+        {/* LEFT Selection */}
         <div className='left'>
 
           <div className="profile-card">
@@ -217,10 +221,10 @@ const Profiledoctor = () => {
           <div className="clinic-info-container">
             <Tabs>
               <TabList>
-                <Tab onClick={()=>{alert('1')}}>Info</Tab>
-                <Tab>Stories (2730)</Tab>
-                <Tab>Consult Q&A</Tab>
-                <Tab>Healthfeed</Tab>
+                <Tab onClick={() => { settab('1') }}> Info</Tab>
+                <Tab onClick={() => { settab('2') }}> Stories (2730)</Tab>
+                <Tab onClick={() => { settab('3') }}> Consult Q&A</Tab>
+                <Tab onClick={() => { settab('4') }}> Healthfeed</Tab>
               </TabList>
 
               <TabPanel>
@@ -256,8 +260,6 @@ const Profiledoctor = () => {
                       <div className="booking-info">
                         <span className='text-sl textstyle'>Mon, Wed - Sun</span>
                         <span className='textstyle'>09:00 AM - 06:00 PM</span>
-
-
                       </div>
                     </div>
                     <div className='flex-1'>
@@ -271,7 +273,39 @@ const Profiledoctor = () => {
               </TabPanel>
               <TabPanel>
                 <div className="stories-tab">
-                  <p>Stories content goes here...</p>
+                  {/* <div className="story-card"> */}
+                  {
+                    stories?.map((data) => {
+                      return (
+                        <>
+                          <div className="w-1/5 p-2 border-b">
+                            <div className="header">
+                              <div className="avatar">{data.author}</div>
+                              <div className="details">
+                                <span className="verified">{data.name}</span>
+                                <span className="time">{data.date}</span>
+                              </div>
+                            </div>
+                            <div className="footer">
+                              <h2 className='text-xl textstyle ml-5'>{data.heading}</h2>
+                              <h2 className="recommendation ml-5">
+                                {data.recommended ? '  👍 I recommend the doctor' : ' 👎 I do not recommend the doctor'}
+                              </h2>
+                            </div>
+                            <div className="content ml-5">
+                              <h3>{data.text}</h3>
+                            </div>
+
+                          </div>
+                        </>
+                      )
+                    })
+                  }
+                  <div style={{display:'flex',flex:1,justifyContent:'center',padding:3,marginTop:'4px'}}>
+                  <Button onClick={() => { alert('more') }}>
+                    More
+                  </Button>
+                    </div>
                 </div>
               </TabPanel>
               <TabPanel>
@@ -289,7 +323,7 @@ const Profiledoctor = () => {
 
           <div className="story-card">
             {
-              stories?.map((data) => {
+              tab == 1 && stories?.map((data) => {
                 return (
                   <>
                     <div className="w-1/5 p-2 border-b">
@@ -315,147 +349,159 @@ const Profiledoctor = () => {
                 )
               })
             }
-            <button onClick={toggleExpand}>
-              {expanded ? 'See less' : 'See more'}
-            </button>
-
-
-
-          </div>
-          <div className="story-card">
-            <div className="w-1/5 p-2 border-b">
-              <p className='text-xl'>Common questions & answers</p>
+            <div style={{display:'flex',flex:1,justifyContent:'center',padding:3,marginTop:'4px'}}>
+           {
+            tab ==1 && (
+            <Button onClick={()=>{alert('seee more')}}>
+              See More
+            </Button>
+            )
+           } 
             </div>
-            {
-              questionans?.map((data) => {
-                return (
-                  <>
-                    <div className="w-1/5 p-2 border-b p-4">
-                      <p className='text-sl textstyle'>Q: {data.ques}</p>
-                      <p className='text-sl'>A: {data.ans}</p>
+          </div>
+          {
+            tab == 1 && (
+              <div className="story-card">
+                <div className="w-1/5 p-2 border-b">
+                  <p className='text-xl'>Common questions & answers</p>
+                </div>
+                {
+                  questionans?.map((data) => {
+                    return (
+                      <>
+                        <div className="w-1/5 p-2 border-b p-4">
+                          <p className='text-sl textstyle'>Q: {data.ques}</p>
+                          <p className='text-sl'>A: {data.ans}</p>
+                        </div>
+                      </>
+                    )
+                  })
+                }
+
+              </div>
+            )
+          }
+
+          {
+            tab == 1 && (
+              <div className="story-card">
+                <div className="w-1/5 p-2 border-b">
+                  <span className='text-xl textstyle'>Services</span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', padding: '3px' }}>
+                    {Services?.map((data, index) => (
+                      <div key={data.id} style={{ width: 'calc(100% / 3)', display: 'flex', alignItems: 'center' }}>
+                        <span style={{ marginRight: '5px' }}>•</span>
+                        <span>{data.service}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="w-1/5 p-2 border-b">
+                  <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', padding: '3px' }}>
+                    <div>
+                      <span className='text-xl textstyle'>Specializations</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {
+                          Specializations?.map((data) => {
+                            return (
+                              <>
+                                <span>• {data.Special}</span>
+                              </>
+                            )
+                          })
+                        }
+                      </div>
                     </div>
-                  </>
-                )
-              })
-            }
-
-          </div>
-
-          <div className="story-card">
-            <div className="w-1/5 p-2 border-b">
-              <span className='text-xl textstyle'>Services</span>
-              <div style={{ display: 'flex', flexWrap: 'wrap', padding: '3px' }}>
-                {Services?.map((data, index) => (
-                  <div key={data.id} style={{ width: 'calc(100% / 3)', display: 'flex', alignItems: 'center' }}>
-                    <span style={{ marginRight: '5px' }}>•</span>
-                    <span>{data.service}</span>
+                    <div>
+                      <span className='text-xl textstyle mr-5'>Awards and Recognitions</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '40ch', wordBreak: 'break-word' }}>
+                        {
+                          Awards?.map((data) => {
+                            return (
+                              <>
+                                <span>•{data.award}</span>
+                              </>
+                            )
+                          })
+                        }
+                      </div>
+                    </div>
                   </div>
-                ))}
+                </div>
+
+
+                <div className="w-1/5 p-2 border-b">
+                  <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', padding: '3px' }}>
+                    <div>
+                      <span className='text-xl textstyle'>Education</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {
+                          edu?.map((data) => {
+                            return (
+                              <>
+                                <span>• {data.name}</span>
+                              </>
+                            )
+                          })
+                        }
+                      </div>
+                    </div>
+                    <div>
+                      <span className='text-xl textstyle mr-5'>Memberships</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '40ch', wordBreak: 'break-word' }}>
+                        {
+                          Member?.map((data) => {
+                            return (
+                              <>
+                                <span>•{data.name}</span>
+                              </>
+                            )
+                          })
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="w-1/5 p-2 border-b">
+                  <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', padding: '3px' }}>
+                    <div>
+                      <span className='text-xl textstyle'>Experience</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {
+                          experience?.map((data) => {
+                            return (
+                              <>
+                                <span>• {data.name}</span>
+                              </>
+                            )
+                          })
+                        }
+                      </div>
+                    </div>
+                    <div>
+                      <span className='text-xl textstyle mr-5'>Registrations</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', width: '40ch', wordBreak: 'break-word' }}>
+                        {
+                          Registrations?.map((data) => {
+                            return (
+                              <>
+                                <span>•{data.name}</span>
+                              </>
+                            )
+                          })
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
-            </div>
+            )
+          }
 
-            <div className="w-1/5 p-2 border-b">
-              <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', padding: '3px' }}>
-                <div>
-                  <span className='text-xl textstyle'>Specializations</span>
-                  <div style={{display:'flex',flexDirection:'column'}}>
-                    {
-                      Specializations?.map((data)=>{
-                        return (
-                          <>
-                          <span>• {data.Special}</span>
-                          </>
-                        )
-                      })
-                    }
-                  </div>
-                </div>
-                <div>
-                  <span className='text-xl textstyle mr-5'>Awards and Recognitions</span>
-                  <div style={{display:'flex',flexDirection:'column' ,width:'40ch',wordBreak:'break-word'}}>
-                    {
-                      Awards?.map((data)=>{
-                        return (
-                          <>
-                          <span>•{data.award}</span>
-                          </>
-                        )
-                      })
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            
-            <div className="w-1/5 p-2 border-b">
-              <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', padding: '3px' }}>
-                <div>
-                  <span className='text-xl textstyle'>Education</span>
-                  <div style={{display:'flex',flexDirection:'column'}}>
-                    {
-                      edu?.map((data)=>{
-                        return (
-                          <>
-                          <span>• {data.name}</span>
-                          </>
-                        )
-                      })
-                    }
-                  </div>
-                </div>
-                <div>
-                  <span className='text-xl textstyle mr-5'>Memberships</span>
-                  <div style={{display:'flex',flexDirection:'column' ,width:'40ch',wordBreak:'break-word'}}>
-                    {
-                      Member?.map((data)=>{
-                        return (
-                          <>
-                          <span>•{data.name}</span>
-                          </>
-                        )
-                      })
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
-            <div className="w-1/5 p-2 border-b">
-              <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between', padding: '3px' }}>
-                <div>
-                  <span className='text-xl textstyle'>Experience</span>
-                  <div style={{display:'flex',flexDirection:'column'}}>
-                    {
-                      experience?.map((data)=>{
-                        return (
-                          <>
-                          <span>• {data.name}</span>
-                          </>
-                        )
-                      })
-                    }
-                  </div>
-                </div>
-                <div>
-                  <span className='text-xl textstyle mr-5'>Registrations</span>
-                  <div style={{display:'flex',flexDirection:'column' ,width:'40ch',wordBreak:'break-word'}}>
-                    {
-                      Registrations?.map((data)=>{
-                        return (
-                          <>
-                          <span>•{data.name}</span>
-                          </>
-                        )
-                      })
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
         </div>
 
 
@@ -472,60 +518,60 @@ const Profiledoctor = () => {
 
         {/* RIght Selection */}
         <div className="right">
-        <div id="container">
-      <div id="header">
-        <div id="header-left">
-          <span className="icon">🏥</span>
-          <span>Clinic Appointment</span>
-        </div>
-        <div className="header-right">₹300 <span className="free">FREE</span></div>
-      </div>
-      <div className="clinic-details">
-        <div id="clinic-info">
-          <div className="clinic-name">
-            All Care Dental Centre - since 1969
+          <div id="container">
+            <div id="header">
+              <div id="header-left">
+                <span className="icon">🏥</span>
+                <span>Clinic Appointment</span>
+              </div>
+              <div className="header-right">₹300 <span className="free">FREE</span></div>
+            </div>
+            <div className="clinic-details">
+              <div id="clinic-info">
+                <div className="clinic-name">
+                  All Care Dental Centre - since 1969
+                </div>
+                <div className="clinic-location">Indiranagar</div>
+              </div>
+              <div className="change-clinic cursor-pointer" onClick={() => { alert('change click') }}>Change Clinic</div>
+            </div>
+            <div className="tabs">
+              <div className="tab active">Today <span>5 Slots Available</span></div>
+              <div className="tab">Tomorrow <span>21 Slots Available</span></div>
+              <div className="tab">Thu, 6 Jun <span>21 Slots Available</span></div>
+            </div>
+            <div className="slots border-b p-2">
+              <div className="slot-time">Morning (5 slots)</div>
+              <div className="slot-buttons">
+                <button>05:30PM</button>
+                <button>06:00PM</button>
+                <button>06:30PM</button>
+                <button>07:00PM</button>
+                <button>07:30PM</button>
+              </div>
+            </div>
+            <div className="slots border-b p-2">
+              <div className="slot-time">Afternoon (5 slots)</div>
+              <div className="slot-buttons">
+                <button>05:30PM</button>
+                <button>06:00PM</button>
+                <button>06:30PM</button>
+                <button>07:00PM</button>
+                <button>07:30PM</button>
+              </div>
+            </div>
+            <div className="slots border-b p-2">
+              <div className="slot-time">Evening (5 slots)</div>
+              <div className="slot-buttons">
+                <button>05:30PM</button>
+                <button>06:00PM</button>
+                <button>06:30PM</button>
+                <button>07:00PM</button>
+                <button>07:30PM</button>
+              </div>
+            </div>
           </div>
-          <div className="clinic-location">Indiranagar</div>
-        </div>
-        <div className="change-clinic cursor-pointer" onClick={()=>{alert('change click')}}>Change Clinic</div>
-      </div>
-      <div className="tabs">
-        <div className="tab active">Today <span>5 Slots Available</span></div>
-        <div className="tab">Tomorrow <span>21 Slots Available</span></div>
-        <div className="tab">Thu, 6 Jun <span>21 Slots Available</span></div>
-      </div>
-      <div className="slots border-b p-2">
-        <div className="slot-time">Morning (5 slots)</div>
-        <div className="slot-buttons">
-          <button>05:30PM</button>
-          <button>06:00PM</button>
-          <button>06:30PM</button>
-          <button>07:00PM</button>
-          <button>07:30PM</button>
-        </div>
-      </div>
-      <div className="slots border-b p-2">
-        <div className="slot-time">Afternoon (5 slots)</div>
-        <div className="slot-buttons">
-          <button>05:30PM</button>
-          <button>06:00PM</button>
-          <button>06:30PM</button>
-          <button>07:00PM</button>
-          <button>07:30PM</button>
-        </div>
-      </div>
-      <div className="slots border-b p-2">
-        <div className="slot-time">Evening (5 slots)</div>
-        <div className="slot-buttons">
-          <button>05:30PM</button>
-          <button>06:00PM</button>
-          <button>06:30PM</button>
-          <button>07:00PM</button>
-          <button>07:30PM</button>
-        </div>
-      </div>
-      </div>
-        
+
         </div>
 
 

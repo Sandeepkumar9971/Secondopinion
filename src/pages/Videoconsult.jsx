@@ -14,45 +14,72 @@ import { Pagination } from 'swiper/modules';
 import Searchbar from '@/components/Searchbar'
 import ClinicConsultation from '@/components/ClinicConsultation';
 import { Collapse } from 'react-collapse';
+import {useRouter} from 'next/navigation'
 
 
 const categoryList = [
   {
+    id:1,
     Name: "Periods doubts or Pregency",
     url: "/irregular-painful+period.webp",
-    link: '#'
+    link: '#',
+    price:'499'
   },
   {
+    id:2,
     Name: "Acne pimple or skin issues",
     url: "/Acne.webp",
+    link: '#',
+    price:'499'
   },
   {
+    id:3,
     Name: "Cold cought or fever",
     url: "/coughing.webp",
+    link: '#',
+    price:'499'
   },
   {
+    id:4,
     Name: "Depression or anxiety",
     url: "/12-mental-wellness.webp",
+    link: '#',
+    price:'499'
   },
   {
+    id:5,
     Name: "Child not feeling well",
     url: "/baby-boy.png",
+    link: '#',
+    price:'499'
   },
   {
+    id:6,
     Name: "Performance issues in bed",
     url: "/gender.png",
+    link: '#',
+    price:'499'
   },
   {
+    id:7,
     Name: "Performance issues in bed",
     url: "/gender.png",
+    link: '#',
+    price:'499'
   },
   {
+    id:8,
     Name: "Performance issues in bed",
     url: "/gender.png",
+    link: '#',
+    price:'499'
   },
   {
+    id:9,
     Name: "Performance issues in bed",
     url: "/gender.png",
+    link: '#',
+    price:'499'
   },
 ]
 
@@ -161,8 +188,8 @@ const FAQdata = [
 
 const Videoconsult = () => {
 
+  const router = useRouter()
   const [openIndexes, setOpenIndexes] = useState([false, false, false, false, false, false]);
-
   const toggleCollapse = (index) => {
     setOpenIndexes(
       openIndexes.map((isOpen, i) => (i === index ? !isOpen : isOpen))
@@ -189,7 +216,7 @@ const Videoconsult = () => {
             <span className="ml-4 text-lg text-gray-700">+141 Doctors are online</span>
             <span className="ml-2 text-green-500">●</span>
           </div>
-          <Button id="button-cons" className="text-white px-6 mt-3">
+          <Button id="button-cons" className="text-white px-6 mt-3" onClick={() => {router.push('/consulte/newconsult')}}>
             Consult Now
           </Button>
         </div>
@@ -224,7 +251,7 @@ const Videoconsult = () => {
               <h2 className='text-3xl '>25+ Specialities</h2>
             </div>
             <div className='flex-1/3'>
-              <Button className='border border-black bg-transparent text-black hover-none' onClick={() => alert('hello')}>
+              <Button className='border border-black bg-transparent text-black hover-none' onClick={() => {router.push('/consulte/newconsult')}}>
                 See all Specialities
               </Button>
             </div>
@@ -251,13 +278,15 @@ const Videoconsult = () => {
           >
             {categoryList.map((item, index) => index < 10 && (
               <SwiperSlide key={index}>
-                <Link href={'/search/' + item.Name} className='flex flex-col text-center items-center'>
+                <Link href={`/consulte/newconsult/${item.id}`} className='flex flex-col text-center items-center'>
+                {/* <Link href={'/search/' + item.Name} className='flex flex-col text-center items-center'> */}
                   <div className='flex justify-center items-center'>
                     <Image src={item.url} alt='icon' width={70} height={70} className='object-contain m-2 cursor-pointer' />
                   </div>
                   <div className='flex flex-col justify-center items-center'>
                     <label className='text-sm max-w-xs text-center break-words'>{item.Name}</label>
-                    <label className='mt-2 text-sm max-w-sm text-blue-700 text-center cursor-pointer' onClick={() => { alert('click') }}>{'Consult Now'}</label>
+                    <label className='text-sm max-w-xs text-center break-words'>₹{item.price}</label>
+                    <label className='mt-2 text-sm max-w-sm text-blue-700 text-center cursor-pointer' onClick={() => {router.push(`/consulte/newconsult/${item.id}`)}}>{'Consult Now'}</label>
                   </div>
                 </Link>
               </SwiperSlide>
@@ -295,7 +324,7 @@ const Videoconsult = () => {
               <div className="offer-content">
                 <span className="offer-label">OFFER</span>
                 <h3>Consult with specialists at just ₹199</h3>
-                <a href="#" className="offer-link">Consult Now</a>
+                <p className="offer-link cursor-pointer" onClick={() => {router.push('/consulte/newconsult')}}>Consult Now</p>
               </div>
               <div className="offer-image">
                 <img src="/offer-specialist-v1.png" alt="Doctor" />
@@ -759,7 +788,7 @@ const Videoconsult = () => {
               <p className="text-sl">Connect with India's top doctors online</p>
             </div>
             <div className="flex flex-col mt-5">
-              <Button style={{ background: '#58B0F6' }}>Consult Now</Button>
+              <Button style={{ background: '#58B0F6' }} onClick={() => {router.push('/consulte/newconsult')}}>Consult Now</Button>
             </div>
 
 

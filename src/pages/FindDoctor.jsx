@@ -10,14 +10,15 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import StyleIcon from '@mui/icons-material/Style';
 import CheckIcon from '@mui/icons-material/Check';
 import FolderIcon from '@mui/icons-material/Folder';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
+import {Button} from '@material-tailwind/react';
 import Usersays from '@/components/Usersays';
 import { Chip } from "@material-tailwind/react"
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-
 import { Virtual, Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { useRouter } from 'next/navigation';
 const data = [
   {
     id: 1,
@@ -99,6 +100,7 @@ const content = [
   },
 ];
 const FindDoctor = () => {
+  const router = useRouter()
   return (
     <>
       <section class="relative w-full h-screen bg-blue-900">
@@ -158,7 +160,7 @@ const FindDoctor = () => {
                 Stringent data privacy policies
               </li>
             </ul>
-            <Button className="bg-blue-600 text-blue-400 px-6 py-2 rounded-full">Read more</Button>
+            <Button className="border border-black bg-transparent text-black hover-none mt-3">Read more</Button>
           </div>
           <div className="flex-1 lg:w-1/2 px-4 lg:px-0">
             <img src="/security_1.webp" alt="Security Illustration" className="w-60 h-auto" />
@@ -199,7 +201,7 @@ const FindDoctor = () => {
               </li>
             </ul>
             <div>
-              <Button className="bg-blue-600 text-blue-400 px-6 py-2 rounded-full">Read more</Button>
+              <Button className="border border-black bg-transparent text-black hover-none mt-3" onClick={()=>{router.push(`/searchdoctor/${'delhi'}/${'doctor'}`) }}>Find me the right doctor</Button>
             </div>
           </div>
           <div className="flex-1/3 lg:w-1/2 px-4 lg:px-0">
@@ -236,7 +238,7 @@ const FindDoctor = () => {
               </li>
             </ul>
             <div>
-              <Button className="bg-blue-600 text-blue-400 px-6 py-2 rounded-full hover:none">Read more </Button><span><FiberManualRecordIcon style={{ color: 'green', height: '20' }} /> Online Doctors</span>
+              <Button className="border border-black bg-transparent text-black hover-none mt-3" onClick={() => {router.push('/consulte/newconsult')}}>Consult Now</Button><span><FiberManualRecordIcon style={{ color: 'green', height: '20', }} /> Online Doctors</span>
             </div>
           </div>
         </div>
@@ -282,7 +284,7 @@ const FindDoctor = () => {
           </Swiper>
         </div>
         <div className='flex flex-col items-center'>
-          <Button>More Articals</Button>
+          <Button className="border border-black bg-transparent text-black hover-none mt-3">More Articals</Button>
         </div>
       </div>
 

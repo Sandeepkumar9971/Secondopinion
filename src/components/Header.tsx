@@ -11,8 +11,7 @@ import { useRouter } from 'next/navigation'
 function Header() {
     const router = useRouter()
     const { data: session } = useSession()
-    const location = window.location.pathname
-    const [path,setpath] = useState(location)
+    const [path,setpath] = useState('')
 
 
     // Function to handle sign out

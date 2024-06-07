@@ -5,9 +5,9 @@ import { getToken } from 'next-auth/jwt';
 // This function handles middleware logic and can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
     const token = await getToken({ req: request });
-    console.log("token",token)
+    // console.log("token",token)
     const role = token?.role?.toString().toLowerCase();
-    console.log("role",role);
+    // console.log("role",role);
     const url = request.nextUrl;
 
     // If token exists and user is trying to access login/signup or dashboard, redirect them to their specific dashboard

@@ -27,6 +27,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import {  signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
 import { PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 import {auth} from '../../../../firebase'
+import {getGreeting} from '@/helper/getGreeting'
 
 
 // Define the type of props passed to the component
@@ -40,12 +41,13 @@ function LoginSign({ }: Props) {
     const [loginotp, setloginotp] = useState(false)
     const [isdoctor, setisdoctor] = useState(false)
     const [loginCredential, setLoginCredential] = useState<{ username: string, password: string }>({ username: "", password: "" }); // State for login credentials
-
+    const[page,setpage]=useState(1)
+    console.log(page);
     // Initialize useRouter hook for navigation
     const router = useRouter();
 
     // Function to handle registration form submission
-    async function onSubmitRegister(value) {
+    async function onSubmitRegister(value:any) {
         try {
             // Send a POST request to register a user
             const response = await axios.post(`/api/users/register`, {...value});
@@ -69,15 +71,17 @@ function LoginSign({ }: Props) {
     }
 
     // Function to handle login form submission
-    async function onSubmitLogin() {
+    async function onSubmitLogin(values:any) {
+        console.log(values)
         try {
             // Send a request to sign in the user with credentials
             const result = await signIn('credentials', {
                 redirect: false,
-                username: loginCredential.username,
-                password: loginCredential.password
-            });
+                mobile: values.loginmobile,
+                password:values.loginpassword
 
+            });
+            console.log(result)
             if (result?.error) {
                 // Display error message using toast notification on login failure
                 toast(result.error, {
@@ -111,7 +115,7 @@ function LoginSign({ }: Props) {
         countryCode: '+91',
         email:'sandeephexbusiness@gmail.com'
     };
-    const validate = (values) => {
+    const validate = (values:any) => {
         const errors = {};
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const mobileRegex = /^\d{10}$/;
@@ -148,7 +152,7 @@ const logininitialValues = {
     logincountrycode: '+91',
   };
 
-  const loginvalidate = (values) => {
+  const loginvalidate = (values:any) => {
     const errors = {};
     const mobileRegex = /^\d{10}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -161,9 +165,10 @@ const logininitialValues = {
     return errors;
   };
 
-  const loginonSubmit = (values) => {
+  const loginonSubmit = (values:any) => {
     alert('submit');
     console.log('submit', values);
+    onSubmitLogin(values)
   };
 
   const loginFormik = useFormik({
@@ -177,11 +182,12 @@ const logininitialValues = {
             {/* Tabs for switching between Login and Register */}
             <Tabs defaultValue="login" className="w-[400px]">
                 {/* TabsList for displaying tab labels */}
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     {/* Tab trigger for Login */}
                     <TabsTrigger value="login">Login</TabsTrigger>
                     {/* Tab trigger for Register */}
-                    <TabsTrigger value="register">Register</TabsTrigger>
+                    <TabsTrigger value="userregister">User Register</TabsTrigger>
+                    <TabsTrigger value="doctorregister">Doctor Register</TabsTrigger>
                 </TabsList>
                 {/* Content of the Login tab */}
                 <TabsContent value="login">
@@ -302,7 +308,7 @@ const logininitialValues = {
 
 
 
-                <TabsContent value="register">
+                <TabsContent value="userregister">
                     {/* Card for containing registration form */}
                    
                     <Card>
@@ -313,11 +319,9 @@ const logininitialValues = {
                                 <CardTitle>Join <span style={{ color: '#22A0D8' }}>SECOND OPINION</span></CardTitle>
                             </div>
                             <div>
-                                <CardTitle className='text-sm'>{
-                                    isdoctor ? <span style={{ color: '#22A0D8', cursor: 'pointer' }} onClick={() => { setisdoctor(false) }}>Not a Doctor</span> : <>
-                                        Are you a Doctor <span style={{ color: '#22A0D8', cursor: 'pointer' }} onClick={() => { setisdoctor(true) }}>REGISTER HERE</span>
-                                    </>
-                                }
+                                <CardTitle className='text-sm'>
+                                Hi,<span style={{ color: '#22A0D8', cursor: 'pointer' }}> {getGreeting()}</span> User
+                                   
                                 </CardTitle>
                             </div>
                         </CardHeader>
@@ -325,7 +329,7 @@ const logininitialValues = {
                             <div className="space-y-1">
                             <div>
                                     <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                       Full Namme
+                                       Full Name
                                     </label>
                                     <div className="relative">
                                         <input
@@ -345,11 +349,12 @@ const logininitialValues = {
                                 </div>
                             </div>
                             <div className="space-y-1">
+                            <div>
                                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                                     Mobile Number
                                 </label>
                                 <div className="relative flex items-center">
-                                    <div>
+                                    
                                     <div className="absolute inset-y-0 left-0 flex items-center pl-1">
                                         <select
                                             id="countryCode"
@@ -376,11 +381,12 @@ const logininitialValues = {
                                         // disabled={isotpsend}
                                         className={`block w-full rounded-md border-0 py-2 pr--4 pl-28 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
                                     />
-                                    </div>
+                                    
                                 </div>
                                     {Formik.touched.mobile && Formik.errors.mobile ? (
                                         <div style={{ color: 'red' }}>{Formik.errors.mobile}</div>
                                     ) : null}
+                                </div>
                             </div>
                             <div className="space-y-1">
                             <div>
@@ -465,6 +471,584 @@ const logininitialValues = {
                             > Send OTP
                             </button>
                         </CardFooter>
+                    </form>
+                    </Card>
+                </TabsContent>
+
+
+
+                <TabsContent value="doctorregister">
+                    {/* Card for containing registration form */}
+                   
+                    <Card>
+                    <form onSubmit={Formik.handleSubmit}>
+                        
+                        <CardHeader>
+                            <div>
+                                <CardTitle>Join <span style={{ color: '#22A0D8' }}>SECOND OPINION</span></CardTitle>
+                            </div>
+                            <div>
+                            <CardTitle className='text-sm'>
+                                Hi,<span style={{ color: '#22A0D8', cursor: 'pointer' }}> {getGreeting()}</span> Doctor
+                                </CardTitle>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {
+                                page ==1 && (
+<>
+<div className="space-y-1">
+                            <div>
+                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                       Full Namme
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+
+                            <div className="space-y-1">
+                            <div className='flex flex-1 flex-row gap-2'>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                      Degree
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                       Specialization
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                    
+                                    
+                                </div>
+                            </div>
+
+
+                            <div className="space-y-1">
+                            <div className='flex flex-1 flex-row gap-2'>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                      Experience
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                     Fee Per Consult
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                    
+                                    
+                                </div>
+                            </div>
+</>
+                                )
+                            }
+
+                            {
+                                page==2 && (
+
+                                    <>
+                                      <div className="space-y-1">
+                            <div className='flex flex-1 flex-row gap-2'>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                     Opening Timming
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                     Closing Timing
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                    
+                                    
+                                </div>
+                            </div>
+
+
+                            <div className="space-y-1">
+                            <div className='flex flex-1 flex-row gap-2'>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                    State
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                     City
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                    
+                                    
+                                </div>
+                            </div>
+
+
+                            <div className="space-y-1">
+                            <div>
+                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                      Address
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                                    </>
+                                )
+                            }
+                            
+
+                          {
+                            page==3 && (
+<>
+<div className="space-y-1">
+                            <div className='flex flex-1 flex-row gap-2'>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                    URL
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                    WebSite URL
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                    
+                                    
+                                </div>
+                            </div>
+
+
+                            <div className="space-y-1">
+                            <div className='flex flex-1 flex-row gap-2'>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                 FaceBook Link
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                   Linkdine Link
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                    
+                                    
+                                </div>
+                            </div>
+
+
+                            <div className="space-y-1">
+                            <div className='flex flex-1 flex-row gap-2'>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                 Twitter Link
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                   YouTube Link
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="fullname"
+                                            name="fullname"
+                                            type="text"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.fullname}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                </div>
+                                    
+                                    
+                                </div>
+                            </div>
+</>
+
+                            )
+                          }
+
+{
+    page==4 && (
+        <>
+         <div className="space-y-1">
+                                <div>
+                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                    Mobile Number
+                                </label>
+                                <div className="relative flex items-center">
+                                    
+                                    <div className="absolute inset-y-0 left-0 flex items-center pl-1">
+                                        <select
+                                            id="countryCode"
+                                            name="countryCode"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.countryCode}
+                                            // disabled={isotpsend}
+                                            className="block w-24 py-2 pr-8 text-gray-900 bg-white border-0 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        >
+                                            <option className='w-24 py-2 pr-8 text-gray-900 bg-white' value='+91'>+91</option>
+                                           
+                                        </select>
+                                    </div>
+                                    <input
+                                        id="mobile"
+                                        name="mobile"
+                                        type="mobile"
+                                        autoComplete="mobile"
+                                        onChange={Formik.handleChange}
+                                        onBlur={Formik.handleBlur}
+                                        value={Formik.values.mobile}
+                                        required
+                                        // disabled={isotpsend}
+                                        className={`block w-full rounded-md border-0 py-2 pr--4 pl-28 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
+                                    />
+                                    
+                                </div>
+                                    {Formik.touched.mobile && Formik.errors.mobile ? (
+                                        <div style={{ color: 'red' }}>{Formik.errors.mobile}</div>
+                                    ) : null}
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                            <div>
+                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                      Email Address
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            autoComplete="fullname"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.email}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                       
+                                    </div>
+                                    {Formik.touched.email && Formik.errors.email ? (
+                                    <div style={{ color: 'red' }}>{Formik.errors.email}</div>
+                                ) : null}
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                        Create Password
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="password"
+                                            name="password"
+                                            type={ispasswordshow ? "password" : "text"}
+                                            autoComplete="password"
+                                            onChange={Formik.handleChange}
+                                            onBlur={Formik.handleBlur}
+                                            value={Formik.values.password}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events cursor-pointer" onClick={() => { setpasswordshow((e) => !e) }}>
+                                            {ispasswordshow ? <RemoveRedEyeIcon /> : <VisibilityOffIcon />}
+                                        </div>
+                                    </div>
+                                    {Formik.touched.password && Formik.errors.password ? (
+                                    <div style={{ color: 'red' }}>{Formik.errors.password}  
+                                    <span>
+                                     <Tooltip
+                                    content={
+                                      <div className="w-80">
+                                        <Typography
+                                          variant="small"
+                                          color="white"
+                                          className="font-normal opacity-80"
+                                        >
+                                          Password must contain at least 
+                                          Two lowercase letter,
+                                          Two uppercase letter, Two digit, 
+                                          Two special character,
+                                          and be at least 8 characters long
+                                        </Typography>
+                                      </div>
+                                    }
+                                  >
+                                   <InfoIcon/>
+                                  </Tooltip>
+                                    </span>
+                                  </div>
+                                ) : null}
+                                </div>
+                            </div>
+                            {/* <CardFooter className='w-full'>
+                            <button
+                          
+                            style={{background:'#0D7DFF'}}
+                                type="submit"
+                                className="flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            > Send OTP
+                            </button>
+                        </CardFooter> */}
+        </>
+    )
+}
+                             
+                    <CardFooter className='w-full'>
+                    <div className='flex flex-1 flex-row gap-2'>  
+                        {
+                                page!=1 && (
+                                    <span
+                                    style={{background:'#0D7DFF' }}
+                                    onClick={()=>{setpage((e)=>e-1)}}
+                                        className="flex w-full justify-center rounded-md cursor-pointer  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    > Pre
+                                    </span>
+                                )
+                        }  
+                           
+                           {
+                            page==4 ?   <button
+                          
+                            style={{background:'#0D7DFF'}}
+                                type="submit"
+                                className="flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            > Send OTP
+                            </button> :    <span
+                            style={{background:'#0D7DFF'}}
+                            onClick={()=>{setpage((e)=>e+1)}}
+                                className="flex w-full justify-center rounded-md cursor-pointer  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            > Next
+                            </span>
+
+                           }
+
+                         
+                            </div>  
+                        </CardFooter>
+                        
+                      
+
+                           
+{/* <div id='recaptcha-container'></div> */}
+                        </CardContent>
+                        
                     </form>
                     </Card>
                 </TabsContent>

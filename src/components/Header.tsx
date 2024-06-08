@@ -13,7 +13,7 @@ function Header() {
     const { data: session } = useSession()
     const [path,setpath] = useState('')
 
-
+console.log(session);
     // Function to handle sign out
     async function onClickSignOut() {
         try {
@@ -54,10 +54,9 @@ function Header() {
         return (
             <div className='flex items-center justify-between p-4 shadow-sm'>
                 <div className='flex items-center gap-10' >
-                    <Image className='cursor-pointer' src="/logo.svg" alt='logo'
-                        width={180} height={80}
-                    // onClick={()=>{router.push('/')}}
-                    />
+                <Image src="/second_opinion.png" alt='logo' onClick={() => { router.push('/')}}
+                    width={100} height={100}
+                />
                     <ul className='md:flex gap-8 hidden'>
                         {Menu.map((item, index) => (
                             <Link key={index} href={item.path}>
@@ -69,13 +68,13 @@ function Header() {
                     </ul>
                 </div>
                 <div className='flex gap-3'>
-                    <Button asChild>
+                    <Button asChild >
                         <h2 className='text-md flex gap-2 text-gray-500'>
                             <LayoutDashboard />
                             <Link href="/dashboard">Dashboard</Link>
                         </h2>
                     </Button>
-                    <Button asChild>
+                    <Button  asChild className='border bg-transparent text-black '>
                         <Link href="#" onClick={() => onClickSignOut()}>Sign out</Link>
                     </Button>
                 </div>
@@ -101,9 +100,10 @@ function Header() {
                     ))}
                 </ul>
             </div>
-            <Button asChild className='border border-black bg-transparent text-black hover-none'>
+            <Button asChild className='border bg-transparent text-black '>
                 <Link href="/login_signup">Login/Register</Link>
             </Button>
+            
         </div>
     )
 }

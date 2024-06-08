@@ -4,19 +4,19 @@ const userSchema = new mongoose.Schema(
   {
     fullname: {
       type: String,
-      // required: true,
+      required: true,
     },
     email: {
       type: String,
-      // required: true,
+      required: true,
     },
     countryCode: {
       type: String,
-      // required: true
+      required: true
     },
     mobileNumber:{
       type: String,
-      // required: true
+      required: true
     },
     password: {
       type: String,

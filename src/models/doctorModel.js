@@ -3,17 +3,17 @@ import mongoose from 'mongoose'
 
 const doctorSchema = new mongoose.Schema(
   {
-    username: {
+    fullname: {
       type: String,
       required: true,
     },
-    firstName: {
-      type: String,
-      required: true,
+    countryCode:{
+      type:String,
+      required:true
     },
-    lastName: {
+    mobileNumber:{
       type: String,
-      required: true,
+      required: true
     },
     about:{
       type: String,
@@ -32,11 +32,11 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    phoneNumber: {
+    mobileNumber: {
       type: String,
       required: true,
     },
-    website: {
+    website:{
       type: String,
     },
     facebook: {

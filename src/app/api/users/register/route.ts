@@ -5,6 +5,7 @@ import { NextResponse, NextRequest } from 'next/server'; // Next.js server-side 
 import { User } from '@/models/userModel'; // Import User model
 import { connect } from '@/config/dbConfig'; // Import database connection function
 import { createHash } from 'crypto';
+import { Doctor } from '@/models/doctorModel';
 
 // Connect to the MongoDB database
 connect();
@@ -12,29 +13,35 @@ connect();
 // Endpoint for user creation
 export async function POST(request: NextRequest) {
     try {
-    
-        const reqBody = await request.json();     
+
+        const reqBody = await request.json();
         const { password, fullname, countryCode, email, mobile } = reqBody;
-    
-   
-        const userExists = await User.findOne({ mobileNumber:mobile });
+
+
+        const userExists = await User.findOne({
+            $or: [
+                { mobileNumber: mobile },
+                { email: email }
+            ]
+        }) || Doctor.findOne({
+            $or: [
+                { mobileNumber: mobile },
+                { email: email }
+            ]
+        });
         if (userExists) {
-          
+
             return NextResponse.json({ message: "User already exists", success: false }, { status: 200 });
         }
-        
+
         const hashedPasswordStage1 = createHash('sha256').update(password).digest('hex');
         const hashedPasswordStage2 = createHash('sha1').update(hashedPasswordStage1).digest('hex');
         const hashedPasswordStage3 = createHash('md5').update(hashedPasswordStage2).digest('hex');
 
 
-        const newUser = new User({ fullname, password: hashedPasswordStage3, countryCode, email, mobileNumber:mobile});
-        console.log("newUser",newUser)
-       
-    
+        const newUser = new User({ fullname, password: hashedPasswordStage3, countryCode, email, mobileNumber: mobile });
         await newUser.save();
-        
-        // Return success response
+
         return NextResponse.json({ message: "User created successfully", success: true }, { status: 200 });
     } catch (err: any) {
         console.log(err)

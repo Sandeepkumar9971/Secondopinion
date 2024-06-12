@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/config/dbConfig.js", "src/app/api/auth/[...nextauth]/options.js", "tailwind.config.js", "src/components/CategorySearch.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/config/dbConfig.js", "src/app/api/auth/[...nextauth]/options.js", "tailwind.config.js", "src/components/CategorySearch.jsx", "src/app/dashboard/admin/layout.tsx", "src/app/dashboard/admin/page.tsx", "src/components/Admin/Welcome.tsx", "src/components/Admin/AppointmentData/AppointmentAdd.tsx", "src/components/Admin/AppointmentData/Appointment.tsx", "src/components/Admin/AppointmentData/AppointmentEdit.tsx"],
   "exclude": ["node_modules"]
 }

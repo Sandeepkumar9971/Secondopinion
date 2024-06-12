@@ -1,10 +1,12 @@
 import React from 'react'
+import Welcome from "../../../components/Admin/Welcome"
 type Props = {}
 
 async function Admin({}: Props) {
   return (
-    <div className='flex h-screen items-center justify-center'>
-        <h1 className='text-primary text-[100px] font-bold'>Admin</h1>
+    <div >
+        {/* <h1 className='text-primary text-[100px] font-bold'>Admin</h1> */}
+        {/* <Welcome/> */}
     </div>
   )
 }

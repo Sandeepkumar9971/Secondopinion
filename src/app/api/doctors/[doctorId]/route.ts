@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
 
         // Extract the token from the request cookies
         const token = request.cookies.get("token");
+        console.log("token",token)
         
         // Check if token exists
         if (!token) {

@@ -20,55 +20,64 @@ const ClinicConsultation = ({sellbtn=false}) => {
       id: 1,
       profession: "dentist",
       img: '/sp-dentist@2x.jpg',
-      des: "Teeting troubles? Schedule a dental checkup"
+      des: "Teeting troubles? Schedule a dental checkup",
+      link:'/Delhi/Dentist'
     },
     {
       id: 2,
       profession: "Gynecologist/Obstetrician",
       img: '/sp-gynecologist@2x.jpg',
-      des: "Explore for women’s health, pregnancy and infertility treatments"
+      des: "Explore for women’s health, pregnancy and infertility treatments",
+      link:'/Delhi/Gynecologist-Obstetrician'
     },
     {
       id: 3,
       profession: "Dietitian/Nutrition",
       img: '/sp-dietitian@2x.jpg',
-      des: "Get guidance on eating right, weight management and sports nutrition"
+      des: "Get guidance on eating right, weight management and sports nutrition",
+      link:'/Delhi/Dietitian-Nutrition'
     },
     {
       id: 4,
       profession: "Physiotherapist",
       img: '/sp-physiotherapist@2x.jpg',
-      des: "Pulled a muscle? Get it treated by a trained physiotherapist"
+      des: "Pulled a muscle? Get it treated by a trained physiotherapist",
+      link:'/Delhi/Physiotherapist'
     },
     {
       id: 5,
       profession: "General surgeon",
       img: '/sp-general-surgeon@2x.jpg',
-      des: "Need to get operated? Find the right surgeon"
+      des: "Need to get operated? Find the right surgeon",
+      link:'/Delhi/Generalsurgeon'
     },
     {
       id: 6,
       profession: "Orthopedist",
       img: '/sp-orthopedist@2x.jpg',
-      des: "For Bone and Joints issues, spinal injuries and more"
+      des: "For Bone and Joints issues, spinal injuries and more",
+      link:'/Delhi/Orthopedist'
     },
     {
       id: 7,
       profession: "General physician",
       img: '/sp-general-doctor@2x.jpg',
-      des: "Find the right family doctor in your neighborhood"
+      des: "Find the right family doctor in your neighborhood",
+      link:'/Delhi/Generalphysician'
     },
     {
       id: 8,
       profession: "Pediatrician",
       img: '/sp-pediatrician@2x.jpg',
-      des: "Child Specialists and Doctors for Infant"
+      des: "Child Specialists and Doctors for Infant",
+      link:'/Delhi/Pediatrician'
     },
     {
       id: 9,
       profession: "Gastroenterologist",
       img: '/sp-gastroenterologist@2x.jpg',
-      des: "Explore for issues related to digestive system, liver and pancreas"
+      des: "Explore for issues related to digestive system, liver and pancreas",
+      link:'/Delhi/Gastroenterologist'
     },
   ];
   const router = useRouter();
@@ -83,7 +92,7 @@ const ClinicConsultation = ({sellbtn=false}) => {
           </div>
           {
             sellbtn &&  <div className='flex-1/3'>
-            <Button className='border border-black bg-transparent text-black hover-none' onClick={() => alert('hello')}>
+            <Button className='border border-black bg-transparent text-black hover-none'onClick={() => {router.push('/consulte/newconsult')}}>
               See All Symptoms
             </Button>
           </div>
@@ -111,8 +120,9 @@ const ClinicConsultation = ({sellbtn=false}) => {
           slidesPerView={4}
         >
           {content?.map((item, index) => (
-            <SwiperSlide key={index} onClick={() => { router.push(`/`) }}>
-              <div className="min-h-screen bg-gray-100">
+            <SwiperSlide key={index} onClick={() => { router.push(`/consulte/newconsult/${item.id}`) }}>
+            {/* <SwiperSlide key={index} onClick={() => { router.push(`/searchdoctor/${item.link}`) }}> */}
+              <div className="min-h-screen bg-gray-100 cursor-pointer">
                 <div className="bg-white mx-auto shadow-sm rounded-lg hover:shadow-sm transition duration-200 max-w-sm">
                   <img className="rounded-t-lg" src={item.img} alt="" />
                   <div className="py-4 px-1">

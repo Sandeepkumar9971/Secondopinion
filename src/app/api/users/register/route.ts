@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs'; // Module for password hashing
 import { NextResponse, NextRequest } from 'next/server'; // Next.js server-side request and response modules
 import { User } from '@/models/userModel'; // Import User model
 import { connect } from '@/config/dbConfig'; // Import database connection function
+import { createHash } from 'crypto';
+import { Doctor } from '@/models/doctorModel';
 
 // Connect to the MongoDB database
 connect();
@@ -11,32 +13,38 @@ connect();
 // Endpoint for user creation
 export async function POST(request: NextRequest) {
     try {
-        // Parse request body
+
         const reqBody = await request.json();
-        
-        // Destructure request body to extract data
-        const { username, password, firstName, lastName, email, mobileNumber } = reqBody;
-        
-        // Check if a user with the given username already exists
-        const userExists = await User.findOne({ username });
+        const { password, fullname, countryCode, email, mobile } = reqBody;
+
+
+        const userExists = await User.findOne({
+            $or: [
+                { mobileNumber: mobile },
+                { email: email }
+            ]
+        }) || Doctor.findOne({
+            $or: [
+                { mobileNumber: mobile },
+                { email: email }
+            ]
+        });
         if (userExists) {
-            // Return a JSON response indicating that the user already exists
+
             return NextResponse.json({ message: "User already exists", success: false }, { status: 200 });
         }
-        
-        // Generate salt and hash the password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        
-        // Create a new User instance with the provided data
-        const newUser = new User({ username, password: hashedPassword, firstName, lastName, email, mobileNumber });
-        
-        // Save the new user to the database
+
+        const hashedPasswordStage1 = createHash('sha256').update(password).digest('hex');
+        const hashedPasswordStage2 = createHash('sha1').update(hashedPasswordStage1).digest('hex');
+        const hashedPasswordStage3 = createHash('md5').update(hashedPasswordStage2).digest('hex');
+
+
+        const newUser = new User({ fullname, password: hashedPasswordStage3, countryCode, email, mobileNumber: mobile });
         await newUser.save();
-        
-        // Return success response
+
         return NextResponse.json({ message: "User created successfully", success: true }, { status: 200 });
     } catch (err: any) {
+        console.log(err)
         // Return a JSON response for internal server error with a status code (500)
         return NextResponse.json({ message: 'Internal Server Error', success: false }, { status: 500 });
     }

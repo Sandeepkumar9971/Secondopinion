@@ -4,6 +4,7 @@ import {User} from '@/models/userModel'
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import {connect} from '@/config/dbConfig'
+import { createHash } from 'crypto';
 
 // Connect to the database
 connect();
@@ -13,17 +14,24 @@ export async function POST(request: NextRequest) {
     try {
         // Parse request body
         const reqBody = await request.json();
-        const { username, password } = reqBody;
+        const { mobile, password } = reqBody;
+        console.log('login api Hit')
 
         // Check if user exists
-        const user = await User.findOne({ username});
+        const user = await User.findOne({ mobile});
         if (!user) {
             // Return a JSON response indicating that the user does not exist with a bad request status code (400)
             return NextResponse.json({ message: "User does not exist, please check your username", success: false }, { status: 400 });
         }
 
         // Check if password is correct
-        const validPassword = await bcrypt.compare(password, user.password);
+        const hashedPasswordStage1 = createHash('sha256').update(password).digest('hex');
+        const hashedPasswordStage2 = createHash('sha1').update(hashedPasswordStage1).digest('hex');
+        const hashedPasswordStage3 = createHash('md5').update(hashedPasswordStage2).digest('hex');
+        console.log(hashedPasswordStage3,user.password)
+                    // Check if the password is correct
+        const validPassword = hashedPasswordStage3 == user.password
+        // const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
             // Return a JSON response indicating an invalid password with a bad request status code (400)
             return NextResponse.json({ message: "Invalid password", success: false }, { status: 400 });
@@ -41,7 +49,7 @@ export async function POST(request: NextRequest) {
 
         // Respond back to the user with a cookie containing the token
         const response = NextResponse.json({
-            message: "Login successful",
+            message: "Login successful ",
             success: true,
             username: user.username
         }, { status: 200 });

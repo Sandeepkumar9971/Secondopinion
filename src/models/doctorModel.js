@@ -36,6 +36,20 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    
+    countryCode: {
+      type: String,
+      required: true,
+    },
+    openingtiming: {
+      type: String,
+      required: true,
+    },
+    closingtiming: {
+      type: String,
+      required: true,
+    },
+
     website:{
       type: String,
     },
@@ -56,6 +70,10 @@ const doctorSchema = new mongoose.Schema(
       required: true,
     },
     city:  {
+      type: String,
+      required: true
+    },
+    state:  {
       type: String,
       required: true
     },

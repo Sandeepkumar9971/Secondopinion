@@ -87,7 +87,7 @@ export default function Sidebar({
                 isCollapsed ? "invisible w-0" : "visible w-auto"
               }`}
             >
-              <span className="font-medium">Second<span style={{color:'#0F74E9'}}> Opinoin</span></span>
+              <span className="font-medium">Second<span style={{color:'#0D7DFF'}}> Opinion</span></span>
               <span className="text-xs">Care you can trust.</span>
             </div>
           </div>

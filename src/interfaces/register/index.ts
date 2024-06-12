@@ -1,0 +1,56 @@
+export interface DocValues {
+    fullname: string;
+    degree: string;
+    Collage: string;
+    Regisno: string;
+    RegisCouncil: string;
+    Regisyear: string;
+    yearofcompletion: string;
+    specialization: string;
+    experience: string;
+    feePerConsult: string;
+    openingtiming: string;
+    closingtiming: string;
+    state: string;
+    city: string;
+    address: string;
+    gender:String;
+    websiteurl: string;
+    youtube: string;
+    twitter: string;
+    linkdine: string;
+    facebooklink: string;
+    mobile: string;
+    password: string;
+    countryCode: string;
+    email: string;
+    about: string;
+  }
+  export interface DocErrors {
+    fullname?: string;
+    degree?: string;
+    Collage?: string;
+    Regisno?: string;
+    RegisCouncil?: string;
+    Regisyear?: string;
+    yearofcompletion?: string;
+    specialization?: string;
+    experience?: string;
+    feePerConsult?: string;
+    openingtiming?: string;
+    closingtiming?: string;
+    state?: string;
+    city?: string;
+    address?: string;
+    gender:String;
+    websiteurl?: string;
+    youtube?: string;
+    twitter?: string;
+    linkdine?: string;
+    facebooklink?: string;
+    mobile?: string;
+    password?: string;
+    countryCode?: string;
+    email?: string;
+    about?: string;
+  }

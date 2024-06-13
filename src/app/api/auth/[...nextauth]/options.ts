@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials, req) {
-                // console.log("credentials==>",credentials);
+                console.log("credentials==>",credentials);
                 // // Connect to the database
                 await connect();
                 try {
@@ -53,6 +53,8 @@ export const authOptions: NextAuthOptions = {
             }
         })
     ],
+
+
     callbacks: {
         async session({ session, token }) {
             // console.log("check session==>",session, token)
@@ -85,9 +87,12 @@ export const authOptions: NextAuthOptions = {
         // Use JWT for session management
         strategy: "jwt"
     },
+
+
+
     // Secret used to sign the tokens
     // secret: process.env.NEXTAUTH_SECRET
-    secret:"%^%^&&*&(%^%%^^&**())"
+    secret: "%^%^&&*&(%^%%^^&**())"
 }
 
 

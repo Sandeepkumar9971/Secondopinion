@@ -293,14 +293,17 @@ const doconSubmit = async (values:any) => {
     try {
         // Send a POST request to register a user
         const response = await axios.post(`/api/doctors/register`, {...values});
+        console.log(response)
         // Display success message using toast notification
         if(response.data.success){
+
             const result = await signIn('credentials', {
                 redirect: true,
                 mobile:values.mobile,
                 password:values.password
 
             });
+
             toast('Login Sucessfully', {
                 action: {
                     label: "Undo",

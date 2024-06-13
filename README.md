@@ -46,14 +46,14 @@ This is a specialized doctor recommendation and appointment booking system built
 - **Database**: Store user, doctor, and appointment data in a secure database.
 - **Payment Gateway**: Integrate a payment gateway for handling appointment fees.
 
-## Installation
+<!-- ## Installation
 
 1. Clone the repository:
 
 ```bash
 git clone https://github.com/mahafujul/MedNexa.git
 cd MedNexa
-```
+``` -->
 
 2. Install dependencies:
 

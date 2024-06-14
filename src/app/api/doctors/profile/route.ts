@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
 
     // Retrieve the userId from session
     const session = await getServerSession(authOptions);
+    console.log("session==>",session)
     const userId = session?.user?.userId;
 
     // Check if userId is retrieved successfully
@@ -75,11 +76,11 @@ export async function GET(request: NextRequest) {
       {
         $group: {
           _id: "$_id",
-          username: { $first: "$username" },
+          fullname: { $first: "$fullname" },
           email: { $first: "$email" },
-          firstName: { $first: "$firstName" },
-          lastName: { $first: "$lastName" },
-          phoneNumber: { $first: "$phoneNumber" },
+          // firstName: { $first: "$firstName" },
+          // lastName: { $first: "$lastName" },
+          mobileNumber: { $first: "$mobileNumber" },
           role: { $first: "$role" },
           feedbacks: { $first: "$feedbacks" },
           allAppointments: { $push: "$allAppointments" },
@@ -89,16 +90,16 @@ export async function GET(request: NextRequest) {
       // Project fields and categorize appointments
       {
         $project: {
-          username: 1,
+          fullname:1,
           email: 1,
-          firstName: 1,
-          lastName: 1,
-          phoneNumber: 1,
+          // firstName: 1,
+          // lastName: 1,
+          mobileNumber: 1,
           role: 1,
           feedbacks: 1,
           allAppointments: 1,
           doctorName: {
-            $concat: ["$firstName", " ", "$lastName"],
+            $concat: ["$fullname", " ", ""],
           },
           todaySessions: {
             $filter: {
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest) {
               cond: {
                 $and: [
                   { $gte: ["$$appointment.date", today] },
-                  { $lt: ["$$appointment.date", tomorrow] },
+                  { $lt: ["$$appointment.date", tomorrow]},
                 ],
               },
             },

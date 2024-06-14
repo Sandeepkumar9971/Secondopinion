@@ -26,6 +26,7 @@ export default function Doctor() {
     async function fetchDataFromBackend() {
       try {
         const response = await axios.get(`/api/doctors/profile`);
+        console.log(response)
         setUser(response.data.doctor[0]); // Set user state with the fetched data
       } catch (err) {
         console.log(err); // Log any errors
@@ -58,7 +59,7 @@ export default function Doctor() {
                 </CardTitle>
                 <CardContent>
                   <div className="text-2xl font-bold py-5 text-white">
-                    {`Dr. ${user?.firstName || "loading..."}`}
+                    {`Dr. ${user?.fullname || "loading..."}`}
                   </div>
                   <p className="text-md text-muted-foreground pb-6 text-white">
                     Thank you for being part of our team. Your dedication and

@@ -62,8 +62,6 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
-
     website:{
       type: String,
     },
@@ -110,6 +108,10 @@ const doctorSchema = new mongoose.Schema(
     timings : {
       type: Array,
       required: true,
+    },
+    availableSlots: {
+      type: Map,
+      of: [String],
     },
     popular:{
       type: Boolean,

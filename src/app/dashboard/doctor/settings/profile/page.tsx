@@ -5,13 +5,14 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function SettingsProfile() {
-  const [user, setUser] = useState({}); // State to store user data
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     // Function to fetch user data from the backend
     async function fetchDataFromBackend() {
       try {
         const response = await axios.get(`/api/doctors/profile`);
+        // console.log(response)
         setUser(response.data.doctor[0]);
       } catch (err) {
         console.log(err);

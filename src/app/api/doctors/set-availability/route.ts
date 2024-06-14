@@ -10,9 +10,10 @@ export async function POST(request: NextRequest) {
   try {
     // Parse the request body to extract doctorId, date, and slots
     const { doctorId, date, slots } = await request.json();
-
+    console.log(doctorId, date, slots)
     // Find the doctor in the database based on the provided doctorId
     const doctor = await Doctor.findOne({ _id: doctorId });
+    console.log("doctor",doctor )
 
     // Check if the doctor exists
     if (!doctor) {
@@ -24,8 +25,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the doctor's available slots for the specified date
-    doctor.availableSlots.set(date, slots);
 
+    doctor?.availableSlots?.set(date, slots);
+    console.log("doctor4=>",doctor)
     // Save the updated doctor information to the database
     await doctor.save();
 
@@ -35,6 +37,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } catch (err: any) {
+    console.log(err);
     // Return a JSON response for internal server error if an error occurs during the process
     return NextResponse.json(
       { message: err.message, success: false },

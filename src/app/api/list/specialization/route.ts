@@ -7,7 +7,6 @@ export const GET = async () =>{
     try{
         connect()
         const data = await Specialization.find()
-        console.log(data)
         const encryp = encryptData(JSON.stringify(data))
         return NextResponse.json({data:encryp,success:true},{status:200})
     }

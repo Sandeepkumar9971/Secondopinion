@@ -16,8 +16,10 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials, req) {
-                console.log("credentials==>",credentials);
+                // console.log("credentials==>",credentials);
+                
                 // // Connect to the database
+               
                 await connect();
                 try {
                     // Check if user exists in any of the user data models

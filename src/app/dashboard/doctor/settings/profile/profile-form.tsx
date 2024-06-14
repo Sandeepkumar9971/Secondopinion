@@ -20,15 +20,12 @@ import { toast } from "sonner";
 
 // Define schema for form validation using Zod
 const profileFormSchema = z.object({
-  username: z
-    .string()
-    .min(2, {
-      message: "Username must be at least 2 characters.",
-    })
-    .max(30, {
-      message: "Username must not be longer than 30 characters.",
-    })
-    .optional(),
+  mobileNumber: z
+  .string()
+  .regex(/^[0-9]{10}$/, {
+    message: "Please enter a valid 10-digit mobile number.",
+  })
+  .optional(),
   email: z
     .string({
       required_error: "Please enter an email address.",
@@ -48,11 +45,12 @@ export default function ProfileForm({ user }: any) {
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
-    mode: "onChange",
+    mode:"onChange",
   });
 
   // Function to handle form submission
   async function onSubmit(data: ProfileFormValues) {
+    console.log(data)
     try {
       const response = await axios.put("/api/doctors/profile", { ...data });
       // Display success message using toast notification
@@ -79,17 +77,17 @@ export default function ProfileForm({ user }: any) {
         {/* Username Field */}
         <FormField
           control={form.control}
-          name="username"
+          name="mobileNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Mobile</FormLabel>
               <FormControl>
-                <Input disabled defaultValue={user?.username} {...field} />
+                <Input  defaultValue={user?.mobileNumber} {...field} />
               </FormControl>
-              <FormDescription>
+              {/* <FormDescription>
                 This is your public display name. It can be your real name or a
                 pseudonym. You cannot change it once set.
-              </FormDescription>
+              </FormDescription> */}
               <FormMessage />
             </FormItem>
           )}

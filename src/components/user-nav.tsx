@@ -13,10 +13,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSession, signOut } from "next-auth/react";
 import { Session } from "next-auth";
+import { useRouter } from "next/navigation";
 
 export function UserNav() {
+  const router = useRouter()
   const { data: session } = useSession() as { data: Session | null };
 
+  console.log(session)
   const username = session?.user?.name;
   const email = session?.user?.email;
 
@@ -33,20 +36,20 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{username}</p>
+            <p className="text-sm font-medium leading-none">Welcome {username || 'Sandeep'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {email}
             </p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
+        <DropdownMenuGroup className="cursor-pointer">
+          <DropdownMenuItem onClick={()=>{router.push(`${session?.user?.role=='DOCTOR'?'/dashboard/doctor/settings/profile':'/dashboard/user/settings/profile'}`)}} className="cursor-pointer">
             Profile
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Settings
+          <DropdownMenuItem className="cursor-pointer" onClick={()=>{router.push(`${session?.user?.role=='DOCTOR'?'/dashboard/doctor/settings/account':'/dashboard/user/settings/account'}`)}}>
+           Account
             <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -59,7 +62,11 @@ export function UserNav() {
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
+ 
+       
       </DropdownMenuContent>
+
+   
     </DropdownMenu>
   );
 }

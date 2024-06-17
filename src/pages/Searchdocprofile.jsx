@@ -10,8 +10,21 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Button } from '@material-tailwind/react';
 import Link from 'next/link';
+import {makeRequest} from '@/Utils/FatchData'
+import {search_URL} from '@/Utils/Api_URL'
 
 const Searchdocprofile = ({ searchvalue }) => {
+  console.log(searchvalue)
+  useEffect(()=>{
+    try{
+      makeRequest('get',`${search_URL}?data=${JSON.stringify(searchvalue)}`).then((resp)=>{
+        console.log(resp)
+      })
+    }
+    catch(e){
+      console.log(e)
+    }
+  },[searchvalue])
   // ///////////////////////////  State  ///////////////////////////
   const navRef = useRef(null);
   const mapRef = useRef(null);

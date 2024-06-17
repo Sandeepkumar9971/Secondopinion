@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import { useRouter } from 'next/navigation';
+import {makeRequest} from '@/Utils/FatchData'
+import {special} from '@/Utils/Api_URL'
+import {decryptData} from '@/Utils/Sceret'
 
 const locations = [
   { id: 1, name: 'Dwarka' },
@@ -12,17 +15,17 @@ const locations = [
   { id: 7, name: 'Paschim Vihar' },
 ];
 
-const specialties = [
-  { id: 1, name: 'Dentist' },
-  { id: 2, name: 'Gynecologist-obstetrician' },
-  { id: 3, name: 'General Physician' },
-  { id: 4, name: 'Dermatologist' },
-  { id: 5, name: 'Ear-nose-throat (ENT) Specialist' },
-  { id: 6, name: 'Homoeopath' },
-  { id: 7, name: 'Ayurveda' },
-  { id: 8, name: 'Cardiologist' },
-  { id: 9, name: 'Orthopedic Surgeon' },
-];
+// const specialties = [
+//   { id: 1, name: 'Dentist' },
+//   { id: 2, name: 'Gynecologist-obstetrician' },
+//   { id: 3, name: 'General Physician' },
+//   { id: 4, name: 'Dermatologist' },
+//   { id: 5, name: 'Ear-nose-throat (ENT) Specialist' },
+//   { id: 6, name: 'Homoeopath' },
+//   { id: 7, name: 'Ayurveda' },
+//   { id: 8, name: 'Cardiologist' },
+//   { id: 9, name: 'Orthopedic Surgeon' },
+// ];
 
 const doctorsAndHospitals = [
   { id: 1, name: 'Dr. John Doe - Cardiologist' },
@@ -32,12 +35,31 @@ const doctorsAndHospitals = [
   { id: 5, name: 'Lakeview Dental Clinic' },
 ];
 
+
+
+
+
 const Searchbar = ({searchvalue}) => {
+  const [specialist,setspecialist] = useState([])
+  useEffect(()=>{
+    try{
+      makeRequest('get',special).then((data)=>{
+        // console.log(data.data)
+        let decryp = JSON.parse(decryptData(data.data))
+        console.log(decryp)
+        setspecialist(decryp)
+      })
+    }
+    catch(e){
+      console.log(e)
+    }
+    
+    },[])
   console.log(searchvalue)
   const router = useRouter()
   const [location, setLocation] = useState(searchvalue?.doc || 'Delhi');
   const [searchTerm, setSearchTerm] = useState(searchvalue?.spec || '');
-  const [filteredSpecialties, setFilteredSpecialties] = useState(specialties);
+  const [filteredSpecialties, setFilteredSpecialties] = useState(specialist);
   const [filteredLocations, setFilteredLocations] = useState(locations);
   const [showLocationList, setShowLocationList] = useState(false);
   const [showSpecialtyList, setShowSpecialtyList] = useState(false);
@@ -48,17 +70,18 @@ const Searchbar = ({searchvalue}) => {
     setShowSpecialtyList(true);
     setShowLocationList(false);
     if (term.length > 0) {
-      const filteredSpecialties = specialties.filter((specialty) =>
-        specialty.name.toLowerCase().includes(term.toLowerCase())
+      const filteredSpecialties = specialist?.filter((specialty) =>
+        specialty?.spec?.toLowerCase().includes(term.toLowerCase())
       );
 
       const filteredDoctorsAndHospitals = doctorsAndHospitals.filter((result) =>
         result.name.toLowerCase().includes(term.toLowerCase())
       );
       const combinedResults = [...filteredSpecialties, ...filteredDoctorsAndHospitals];
+      console.log(combinedResults);   
       setFilteredSpecialties(combinedResults.length > 0 ? combinedResults : [{ id: 0, name: 'No results found' }]);
     } else {
-      setFilteredSpecialties(specialties);
+      setFilteredSpecialties(specialist || []);
     }
   };
 
@@ -79,7 +102,7 @@ const Searchbar = ({searchvalue}) => {
 
   const clearSearch = () => {
     setSearchTerm('');
-    setFilteredSpecialties(specialties);
+    setFilteredSpecialties(specialist);
   };
 
   const handleLocationClick = (loc) => {
@@ -98,9 +121,9 @@ const Searchbar = ({searchvalue}) => {
 
   const handlespecialist = (specialist) =>{
     console.log(specialist)
-    setSearchTerm(specialist.name);
+    setSearchTerm(specialist.spec);
     setShowSpecialtyList(false); 
-    router.push(`/searchdoctor/${location}/${specialist.name}`) 
+    router.push(`/searchdoctor/${location}/${specialist.spec}`) 
    
   }
   return (
@@ -180,7 +203,7 @@ const Searchbar = ({searchvalue}) => {
               className="flex justify-between px-4 py-2 cursor-pointer hover:bg-gray-100"
             >
               <div>
-                <span className="mr-2">🔍</span>{specialty.name}
+                <span className="mr-2">🔍</span>{specialty.spec}
               </div>
               <div className="text-gray-500">SPECIALITY</div>
             </div>

@@ -1,7 +1,10 @@
 // Import necessary modules and dependencies
 "use client";
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import Select from 'react-select';
+import {makeRequest} from '@/Utils/FatchData'
+import {special,states_URL,cities_URL} from '@/Utils/Api_URL'
 import {
     Card,
     CardContent,
@@ -28,6 +31,11 @@ import {  signInWithPhoneNumber, RecaptchaVerifier } from 'firebase/auth';
 import { PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
 import {auth} from '../../../../firebase'
 import {getGreeting} from '@/helper/getGreeting'
+import { Breadcrumbs } from "@material-tailwind/react";
+import {Checkbox} from '@/components/ui/checkbox' 
+import {DocValues,DocErrors} from '@/interfaces/register/index'
+import {decryptData} from '@/Utils/Sceret'
+import { any } from 'zod';
 
 
 // Define the type of props passed to the component
@@ -36,14 +44,56 @@ type Props = {}
 // Define the LoginSign functional component
 function LoginSign({ }: Props) {
     // Define state variables using useState hook
-    const [user, setUser] = useState({});
-    const [ispasswordshow, setpasswordshow] = useState(true)
-    const [loginotp, setloginotp] = useState(false)
-    const [isdoctor, setisdoctor] = useState(false)
-    const [loginCredential, setLoginCredential] = useState<{ username: string, password: string }>({ username: "", password: "" }); // State for login credentials
+    const [user, setUser] = useState<{}>({});
+    const [ispasswordshow, setpasswordshow] = useState<Boolean>(true)
+    const [loginotp, setloginotp] = useState<Boolean>(false)
+    const [isdoctor, setisdoctor] = useState<Boolean>(false)
+    const [isloading,setisloading] = useState<Boolean>(false)
     const[page,setpage]=useState(1)
-    console.log(page);
-    // Initialize useRouter hook for navigation
+    const [specialdata,setspecialdata]=useState([])
+    const [states,setstates] =useState([])
+    const [citiesdata,setcitiesdata] =useState([])
+   
+
+      const currentYear = new Date().getFullYear();
+      const startYear = 1964;
+   
+      const generateYearOptions = (startYear:any,currentYear:any) => {
+        const years = [];
+        for (let year = startYear; year <= currentYear; year++) {
+          years.push({ value: year, label: year });
+        }
+        return years;
+      };
+
+      const yearOptions = generateYearOptions(startYear,currentYear);
+
+const Councildata = [
+    {
+        id:1,
+        value:'delhiMedicalCouncil',
+        label:'Delhi medical Council'
+    }
+]
+
+
+
+//   const generateSlots = (openingTime, closingTime, duration) => {
+//     const slots = [];
+//     const start = new Date(`1970-01-01T${openingTime}:00`);
+//     const end = new Date(`1970-01-01T${closingTime}:00`);
+    
+//     while (start < end) {
+//       const slotStart = new Date(start);
+//       start.setMinutes(start.getMinutes() + duration);
+//       if (start <= end) {
+//         slots.push(`${slotStart.getHours()}:${slotStart.getMinutes().toString().padStart(2, '0')} - ${start.getHours()}:${start.getMinutes().toString().padStart(2, '0')}`);
+//       }
+//     }
+    
+//     return slots;
+//   };
+
     const router = useRouter();
 
     // Function to handle registration form submission
@@ -52,6 +102,15 @@ function LoginSign({ }: Props) {
             // Send a POST request to register a user
             const response = await axios.post(`/api/users/register`, {...value});
             // Display success message using toast notification
+            if(response.data.success){
+                const result = await signIn('credentials', {
+                    redirect: true,
+                    mobile:value.mobile,
+                    password:value.password
+    
+                });
+    
+                }   
             toast(response.data.message, {
                 action: {
                     label: "Undo",
@@ -76,7 +135,7 @@ function LoginSign({ }: Props) {
         try {
             // Send a request to sign in the user with credentials
             const result = await signIn('credentials', {
-                redirect: false,
+                redirect: true,
                 mobile: values.loginmobile,
                 password:values.loginpassword
 
@@ -107,7 +166,7 @@ function LoginSign({ }: Props) {
             console.error("Login error:", err);
         }
     }
-//////////////////////  Register Formik //////////////////////////////////
+////////////////////// User Register Formik //////////////////////////////////
     const initialValues = {
         fullname:'sandeep',
         mobile: '8888888888',
@@ -134,7 +193,7 @@ function LoginSign({ }: Props) {
         }
         return errors;
     };
-    const onSubmit = (values) => {
+    const onSubmit = (values:any) => {
     onSubmitRegister(values)
     }
     const Formik = useFormik({
@@ -144,6 +203,144 @@ function LoginSign({ }: Props) {
     });
 
 
+////////////////////// Doctor Register Formik //////////////////////////////////
+
+
+const docinitialValues:DocValues = {
+    fullname:'sandeep',
+    degree:'AART',
+    Collage:'',
+    yearofcompletion:'',
+    specialization:'2',
+    experience:'3',
+    feePerConsult:'222',
+    openingtiming:'8:00',
+    closingtiming:'9:00',
+    state:'4037',
+    city:'3',
+    Regisno:'',
+    RegisCouncil:'',
+    Regisyear:'',
+    address:'32-3434',
+    gender:'male',
+    websiteurl:'https://2323jl2.com',
+    youtube:'https://2323jl2.com',
+    twitter:'https://2323jl2.com',
+    linkdine:'https://2323jl2.com',
+    facebooklink:'https://2323jl2.com',
+    mobile: '8888888888',
+    password: '!!11AAaa',
+    countryCode: '+91',
+    email:'sandeephexbusiness@gmail.com',
+    about:'This is about'
+};
+const docvalidate = (values:DocValues) => {
+    const errors:DocErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^\d{10}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+
+    const requiredFields: (keyof DocValues)[] = [
+        'fullname',
+        'degree',
+        'specialization',
+        'experience',
+        'feePerConsult',
+        'openingtiming',
+        'closingtiming',
+        'state',
+        'city',
+        'address',
+        'mobile',
+        'password',
+        'countryCode',
+        'email',
+        'about',
+        "Regisno",
+        'RegisCouncil',
+        'Regisno',
+        'gender',
+        'Collage',
+        'yearofcompletion'
+
+      ];
+      
+      requiredFields.forEach(field => {
+        if (!values[field]) {
+          errors[field] = 'This field is required';
+        }
+      });
+      console.log(errors);
+
+    if (!emailRegex.test(values.email)) {
+        errors.email = 'Invalid email Address';
+    }
+
+    else if (!mobileRegex.test(values.mobile)) {
+        errors.mobile = 'Invalid mobile number';
+
+
+    }
+    else if (!passwordRegex.test(values.password)) {
+        errors.password = 'How to creat password click icon'
+    }
+   
+    return errors;
+};
+const doconSubmit = async (values:any) => {
+    setisloading(true)
+    try {
+        // Send a POST request to register a user
+        const response = await axios.post(`/api/doctors/register`, {...values});
+        console.log(response)
+        // Display success message using toast notification
+        if(response.data.success){
+
+            const result = await signIn('credentials', {
+                redirect: true,
+                mobile:values.mobile,
+                password:values.password
+
+            });
+
+            toast('Login Sucessfully', {
+                action: {
+                    label: "Undo",
+                    onClick: () => console.log("Undo"),
+                },
+            });
+
+            }  
+
+             toast(response.data.message, {
+                    action: {
+                        label: "Undo",
+                        onClick: () => console.log("Undo"),
+                    },
+                });
+           
+       
+    } catch (err: any) {
+        console.log(err)
+        // Display error message using toast notification on registration failure
+        toast(err.response.data.message, {
+            action: {
+                label: "Undo",
+                onClick: () => console.log("Undo"),
+            },
+        });
+    }
+  
+// onSubmitRegister(values)
+}
+const docFormik = useFormik({
+    initialValues:docinitialValues,
+    validate:docvalidate,
+    onSubmit:doconSubmit,
+});
+
+
 //////////////////////  LOGIN Formik //////////////////////////////////
 
 const logininitialValues = {
@@ -151,9 +348,9 @@ const logininitialValues = {
     loginpassword: '!!11AAaa',
     logincountrycode: '+91',
   };
-
+  interface Errors {}
   const loginvalidate = (values:any) => {
-    const errors = {};
+    const errors : Errors = {};
     const mobileRegex = /^\d{10}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -166,16 +363,38 @@ const logininitialValues = {
   };
 
   const loginonSubmit = (values:any) => {
-    alert('submit');
-    console.log('submit', values);
     onSubmitLogin(values)
   };
 
+
+  
   const loginFormik = useFormik({
     initialValues: logininitialValues,
     validate: loginvalidate,
     onSubmit: loginonSubmit,
   });
+
+
+  useEffect(()=>{
+    makeRequest('get',special).then((resp:any)=>{
+        setspecialdata(JSON.parse(decryptData(resp.data)))
+    })
+
+    makeRequest('get',states_URL).then((resp:any)=>{
+        // console.log(resp)
+        setstates(JSON.parse(decryptData(resp.data)))
+    })
+    
+  },[])
+
+  useEffect(()=>{
+    makeRequest('post',cities_URL,{stateid:docFormik.values.state}).then((resp:any)=>{
+        setcitiesdata(JSON.parse(decryptData(resp.data)))
+       
+    })
+    // console.log(docFormik.values.state)
+  },[docFormik.values.state])
+
 
     return (
         <div className='w-100 h-screen flex justify-center items-center'>
@@ -294,9 +513,12 @@ const logininitialValues = {
                             {/* <Button className='w-full' onClick={() => { onSubmitLogin() }}>Send OTP</Button> */}
                             <button
                             style={{background:'#0D7DFF'}}
+                           
                                 type="submit"
                                 className="flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            > Send OTP
+                            > 
+                            Login
+                         
                             </button>
                         </CardFooter>
                       
@@ -468,7 +690,7 @@ const logininitialValues = {
                             style={{background:'#0D7DFF'}}
                                 type="submit"
                                 className="flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            > Send OTP
+                            > Register
                             </button>
                         </CardFooter>
                     </form>
@@ -481,7 +703,7 @@ const logininitialValues = {
                     {/* Card for containing registration form */}
                    
                     <Card>
-                    <form onSubmit={Formik.handleSubmit}>
+                    <form onSubmit={docFormik.handleSubmit}>
                         
                         <CardHeader>
                             <div>
@@ -492,12 +714,21 @@ const logininitialValues = {
                                 Hi,<span style={{ color: '#22A0D8', cursor: 'pointer' }}> {getGreeting()}</span> Doctor
                                 </CardTitle>
                             </div>
+                            <div>
+                                <CardTitle>{page==1?'Profile Details':page==2?'Medical Registration':page==3?'Education Qualification':page==4?'Social Medial': page==5 && 'Credential Details'}</CardTitle>
+                            </div>
+                            <div>
+                      
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-2">
+
+
+
                             {
                                 page ==1 && (
 <>
-<div className="space-y-1">
+                    < div className="space-y-1">
                             <div>
                                     <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                                        Full Namme
@@ -508,203 +739,355 @@ const logininitialValues = {
                                             name="fullname"
                                             type="text"
                                             autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.fullname}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
                                        
                                     </div>
+                                    {docFormik.touched.fullname && docFormik.errors.fullname ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.fullname}</div>
+                                ) : null}
+                                    
+                                </div>
+                            </div>
+
+                    < div className="space-y-1">
+                            <div>
+                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                      Gender
+                                    </label>
+                                    <div className="relative">
+                                     <div className='flex flex-1 flex-wrap gap-2'>
+                                     <input
+                                            type="radio"
+                                            name="gender"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value="male"
+                                            checked={docFormik.values.gender === 'male'}
+                                            className="cursor-pointer"
+                                            />
+                                            <span>Male</span>
+                                            <input
+                                            type="radio"
+                                            name="gender"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value="female"
+                                            checked={docFormik.values.gender === 'female'}
+                                            className="cursor-pointer"
+                                            />
+                                            <span>Female</span>
+                                     </div>
+                                  
+                                       
+                                    </div>
+                                    {docFormik.touched.gender && docFormik.errors.gender ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.gender}</div>
+                                ) : null}
                                     
                                 </div>
                             </div>
 
 
                             <div className="space-y-1">
+                                <div >
+                                  
+                                    <div >
+                                    <label htmlFor="specialization" className="block text-sm font-medium leading-6 text-gray-900">
+                                        Specialization
+                                    </label>
+                                    <div className="relative">
+                                    <select
+                                        id="specialization"
+                                        name="specialization"
+                                        aria-placeholder='specialization'
+                                        autoComplete="fullname"
+                                        onChange={docFormik.handleChange}
+                                        onBlur={docFormik.handleBlur}
+                                        value={docFormik.values.specialization}
+                                        required
+                                        className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        >
+                                        <option value=''>Select specialization</option>
+                                       {
+                                        specialdata?.map((data)=>{
+                                        return <option value={data.id}>{data.spec}</option>
+                                        })
+                                       }
+                                        </select>
+
+                                        {docFormik.touched.specialization && docFormik.errors.specialization ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.specialization}</div>
+                                ) : null}
+                                    </div>
+                                    </div>
+                                </div>
+                                </div>
+                                <div className="space-y-1">
                             <div className='flex flex-1 flex-row gap-2'>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                      Degree
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
-                                            required
-                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
-                                       
-                                    </div>
+                            <div className="flex-1">
+                                <label htmlFor="specialization" className="block text-sm font-medium leading-6 text-gray-900">
+                               State
+                                </label>
+                                <div className="relative">
+                                <select
+                                    id="state"
+                                    name="state"
+                                    aria-placeholder='state'
+                                    autoComplete="state"
+                                    onChange={docFormik.handleChange}
+                                    onBlur={docFormik.handleBlur}
+                                    value={docFormik.values.state}
+                                    required
+                                    className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    >
+                                    <option value=''>Select state</option>
+                                   {
+                                    states?.map((data)=>{
+                                        return <option value={data.id}>{data.name}</option>
+                                    })
+                                   }
+                                    </select>
+                                    {docFormik.touched.state && docFormik.errors.state ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.state}</div>
+                                                                ) : null}
                                 </div>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                       Specialization
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
-                                            required
-                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
-                                       
-                                    </div>
                                 </div>
-                                    
+                                <div className="flex-1">
+                                <label htmlFor="specialization" className="block text-sm font-medium leading-6 text-gray-900">
+                                City
+                                </label>
+                                <div className="relative">
+                                <select
+                                    id="city"
+                                    name="city"
+                                    aria-placeholder='city'
+                                    autoComplete="openingtime"
+                                    onChange={docFormik.handleChange}
+                                    onBlur={docFormik.handleBlur}
+                                    value={docFormik.values.city}
+                                    required
+                                    className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    >
+                                    <option value=''>Select city</option>
+                                   {
+                                    citiesdata?.map((data)=>{
+                                        return <option value={data.id}>{data.name}</option>
+                                    })
+                                   }
+                                    </select>
+                                    {docFormik.touched.city && docFormik.errors.city ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.city}</div>
+                                                                ) : null}
+                                </div>
+                                </div>
+                                                                
                                     
                                 </div>
                             </div>
 
 
                             <div className="space-y-1">
-                            <div className='flex flex-1 flex-row gap-2'>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                      Experience
+                            <div>
+                                    <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
+                                      Address
                                     </label>
                                     <div className="relative">
                                         <input
-                                            id="fullname"
-                                            name="fullname"
+                                            id="address"
+                                            name="address"
                                             type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            autoComplete="address"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.address}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
+                                         {docFormik.touched.address && docFormik.errors.address ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.address}</div>
+                                                                ) : null}
                                        
                                     </div>
-                                </div>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                     Fee Per Consult
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
-                                            required
-                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
-                                       
-                                    </div>
-                                </div>
-                                    
                                     
                                 </div>
                             </div>
+
+                            
 </>
                                 )
                             }
 
+
+
+
+
+
+
+
+
+
+
                             {
-                                page==2 && (
+                                page==3 && (
 
                                     <>
-                                      <div className="space-y-1">
-                            <div className='flex flex-1 flex-row gap-2'>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                     Opening Timming
+                                    <div className="space-y-1">
+
+                                      <div >
+                                    <label htmlFor="degree" className="block text-sm font-medium leading-6 text-gray-900">
+                                        Degree
                                     </label>
                                     <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
+                                        <select
+                                        id="degree"
+                                        name="degree"
+                                        aria-placeholder='degree'
+                                        autoComplete="fullname"
+                                        onChange={docFormik.handleChange}
+                                        onBlur={docFormik.handleBlur}
+                                        value={docFormik.values.degree}
+                                        required
+                                        className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        >
+                                        <option value=''>Select Degree</option>
+                                        <option value='AARCF'>AARCF</option>
+                                        <option value='AART'>AART</option>
+                                        </select>
+                                        {docFormik.touched.degree && docFormik.errors.degree ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.degree}</div>
+                                ) : null}
+                                    </div>
+                                    </div>
+                                    </div>
+
+                                    <div className="space-y-1">
+
+                                      <div >
+                                    <label htmlFor="degree" className="block text-sm font-medium leading-6 text-gray-900">
+                                       Collage/Institute
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                        id="Collage"
+                                        name="Collage"
+                                        aria-placeholder='Collage'
+                                        autoComplete="fullname"
+                                        onChange={docFormik.handleChange}
+                                        onBlur={docFormik.handleBlur}
+                                        value={docFormik.values.Collage}
+                                        required
+                                        className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        >
+                                        <option value=''>Select Collage</option>
+                                        <option value='XYZ'>XYZ</option>
+                                        <option value='ABC'>ABC</option>
+                                        </select>
+                                        {docFormik.touched.degree && docFormik.errors.degree ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.degree}</div>
+                                ) : null}
+                                    </div>
+                                    </div>
+                                    </div>
+
+                                    <div className="space-y-1">
+<div className='flex flex-1 flex-wrap gap-2'>
+<div className='flex-1'>      
+                                <label htmlFor="URL" className="block text-sm font-medium leading-6 text-gray-900">
+                                Year of Completion
+                                    </label>
+                                    <div className="relative">
+                                    <Select
+                                    id=" yearofcompletion"
+                                    name="yearofcompletion"
+                                    options={yearOptions}
+                                    onChange={(option) => docFormik.setFieldValue('yearofcompletion', option?.value)}
+                                    onBlur={docFormik.handleBlur}
+                                    value={yearOptions.find((option) => option.value === docFormik.values.Regisyear)}
+                                    placeholder="Year"
+                                    classNamePrefix="react-select"
+                                    aria-placeholder="Year"
+            />
+                                       
+                                    </div>
+                                    {docFormik.touched.Regisyear && docFormik.errors.Regisyear ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.Regisyear}</div>
+                                                                ) : null}
+                               
+                               
+                                    
+                                    
+                                </div>
+
+                            <div className='flex-1'>      
+                                <label htmlFor="URL" className="block text-sm font-medium leading-6 text-gray-900">
+                                Experience
+                                    </label>
+                                    <div className="relative">
+                                    <input
+                                            id="experience"
+                                            name="experience"
                                             type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            autoComplete="experience"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.experience}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
                                        
                                     </div>
-                                </div>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                     Closing Timing
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
-                                            required
-                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
+                                    {docFormik.touched.experience && docFormik.errors.experience ? (
+                                        <div style={{ color: 'red' }}>{docFormik.errors.experience}</div>
+                                    ) : null}
                                        
                                     </div>
-                                </div>
-                                    
-                                    
-                                </div>
+                                          
+
+</div>
+                          
+
+
                             </div>
 
+                            
+                                    </>
+                                )
+                            }
+                            
 
-                            <div className="space-y-1">
-                            <div className='flex flex-1 flex-row gap-2'>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                    State
+                          {
+                            page==2 && (
+<>
+<div className="space-y-1">
+                            <div>
+                               
+                                <label htmlFor="URL" className="block text-sm font-medium leading-6 text-gray-900">
+                                Registration Number
                                     </label>
                                     <div className="relative">
                                         <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            id="Regisno"
+                                            name="Regisno"
+                                            type="Regisno"
+                                            autoComplete="Regisno"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.Regisno}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
                                        
                                     </div>
-                                </div>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                     City
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
-                                            required
-                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
-                                       
-                                    </div>
-                                </div>
+                                    {docFormik.touched.Regisno && docFormik.errors.Regisno ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.Regisno}</div>
+                                                                ) : null}
+                               
+                               
                                     
                                     
                                 </div>
@@ -713,77 +1096,94 @@ const logininitialValues = {
 
                             <div className="space-y-1">
                             <div>
-                                    <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                      Address
+                               
+                                <label htmlFor="URL" className="block text-sm font-medium leading-6 text-gray-900">
+                                Registration Council
                                     </label>
                                     <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
-                                            required
-                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
+                                    <Select
+                                    id=" RegisCouncil"
+                                    name="RegisCouncil"
+                                    options={Councildata}
+                                    onChange={(option) => docFormik.setFieldValue('RegisCouncil', option?.value)}
+                                    onBlur={docFormik.handleBlur}
+                                    value={Councildata.find((option) => option.value === docFormik.values.RegisCouncil)}
+                                    placeholder="Registration Council"
+                                    classNamePrefix="react-select"
+                                    aria-placeholder="openingtime"
+            />
                                        
                                     </div>
+                                    {docFormik.touched.RegisCouncil && docFormik.errors.RegisCouncil ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.RegisCouncil}</div>
+                                                                ) : null}
+                               
+                               
+                                    
                                     
                                 </div>
                             </div>
-                                    </>
-                                )
-                            }
-                            
 
-                          {
-                            page==3 && (
-<>
-<div className="space-y-1">
-                            <div className='flex flex-1 flex-row gap-2'>
-                                <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
-                                    URL
+
+                            <div className="space-y-1">
+                            <div>
+                               
+                                <label htmlFor="URL" className="block text-sm font-medium leading-6 text-gray-900">
+                                Registration Year
                                     </label>
                                     <div className="relative">
-                                        <input
-                                            id="fullname"
-                                            name="fullname"
-                                            type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
-                                            required
-                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                        />
+                                    <Select
+                                    id=" Regisyear"
+                                    name="Regisyear"
+                                    options={yearOptions}
+                                    onChange={(option) => docFormik.setFieldValue('Regisyear', option?.value)}
+                                    onBlur={docFormik.handleBlur}
+                                    value={yearOptions.find((option) => option.value === docFormik.values.Regisyear)}
+                                    placeholder="Registration Year"
+                                    classNamePrefix="react-select"
+                                    aria-placeholder="openingtime"
+            />
                                        
                                     </div>
+                                    {docFormik.touched.Regisyear && docFormik.errors.Regisyear ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.Regisyear}</div>
+                                                                ) : null}
+                               
+                               
+                                    
+                                    
                                 </div>
-                                <div>
+                            </div>
+</>
+
+                            )
+                          }
+
+
+                          {
+                            page==4 && (
+<>
+                            <div className="space-y-1">
+      
+                        
                                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                                     WebSite URL
                                     </label>
                                     <div className="relative">
                                         <input
-                                            id="fullname"
-                                            name="fullname"
+                                            id="websiteurl"
+                                            name="websiteurl"
                                             type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            autoComplete="websiteurl"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.websiteurl}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
                                        
                                     </div>
-                                </div>
-                                    
-                                    
-                                </div>
+                
                             </div>
 
 
@@ -795,13 +1195,13 @@ const logininitialValues = {
                                     </label>
                                     <div className="relative">
                                         <input
-                                            id="fullname"
-                                            name="fullname"
+                                            id="youtube"
+                                            name="youtube"
                                             type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            autoComplete="youtube"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.youtube}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
@@ -809,18 +1209,18 @@ const logininitialValues = {
                                     </div>
                                 </div>
                                 <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="twitter" className="block text-sm font-medium leading-6 text-gray-900">
                                    Linkdine Link
                                     </label>
                                     <div className="relative">
                                         <input
-                                            id="fullname"
-                                            name="fullname"
+                                            id="twitter"
+                                            name="twitter"
                                             type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            autoComplete="twitter"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.twitter}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
@@ -836,18 +1236,18 @@ const logininitialValues = {
                             <div className="space-y-1">
                             <div className='flex flex-1 flex-row gap-2'>
                                 <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="linkdine" className="block text-sm font-medium leading-6 text-gray-900">
                                  Twitter Link
                                     </label>
                                     <div className="relative">
                                         <input
-                                            id="fullname"
-                                            name="fullname"
+                                            id="linkdine"
+                                            name="linkdine"
                                             type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            autoComplete="linkdine"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.linkdine}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
@@ -855,18 +1255,18 @@ const logininitialValues = {
                                     </div>
                                 </div>
                                 <div>
-                                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                                <label htmlFor="facebooklink" className="block text-sm font-medium leading-6 text-gray-900">
                                    YouTube Link
                                     </label>
                                     <div className="relative">
                                         <input
-                                            id="fullname"
-                                            name="fullname"
+                                            id="facebooklink"
+                                            name="facebooklink"
                                             type="text"
-                                            autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.fullname}
+                                            autoComplete="facebooklink"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.facebooklink}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
@@ -883,7 +1283,7 @@ const logininitialValues = {
                           }
 
 {
-    page==4 && (
+    page==5 && (
         <>
          <div className="space-y-1">
                                 <div>
@@ -896,9 +1296,9 @@ const logininitialValues = {
                                         <select
                                             id="countryCode"
                                             name="countryCode"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.countryCode}
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.countryCode}
                                             // disabled={isotpsend}
                                             className="block w-24 py-2 pr-8 text-gray-900 bg-white border-0 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         >
@@ -911,18 +1311,18 @@ const logininitialValues = {
                                         name="mobile"
                                         type="mobile"
                                         autoComplete="mobile"
-                                        onChange={Formik.handleChange}
-                                        onBlur={Formik.handleBlur}
-                                        value={Formik.values.mobile}
+                                        onChange={docFormik.handleChange}
+                                        onBlur={docFormik.handleBlur}
+                                        value={docFormik.values.mobile}
                                         required
                                         // disabled={isotpsend}
                                         className={`block w-full rounded-md border-0 py-2 pr--4 pl-28 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6`}
                                     />
                                     
                                 </div>
-                                    {Formik.touched.mobile && Formik.errors.mobile ? (
-                                        <div style={{ color: 'red' }}>{Formik.errors.mobile}</div>
-                                    ) : null}
+                                {docFormik.touched.mobile && docFormik.errors.mobile ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.mobile}</div>
+                                ) : null}
                                 </div>
                             </div>
                             <div className="space-y-1">
@@ -936,17 +1336,42 @@ const logininitialValues = {
                                             name="email"
                                             type="email"
                                             autoComplete="fullname"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.email}
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.email}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
                                        
                                     </div>
-                                    {Formik.touched.email && Formik.errors.email ? (
-                                    <div style={{ color: 'red' }}>{Formik.errors.email}</div>
+                                    {docFormik.touched.email && docFormik.errors.email ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.email}</div>
                                 ) : null}
+                                </div>
+                            </div>
+                            <div className="space-y-1">
+                            <div>
+                                    <label htmlFor="address" className="block text-sm font-medium leading-6 text-gray-900">
+                                      About
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            id="about"
+                                            name="about"
+                                            type="text"
+                                            autoComplete="about"
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.about}
+                                            required
+                                            className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                        />
+                                         {docFormik.touched.about && docFormik.errors.about ? (
+                                                                    <div style={{ color: 'red' }}>{docFormik.errors.about}</div>
+                                                                ) : null}
+                                       
+                                    </div>
+                                    
                                 </div>
                             </div>
                             <div className="space-y-1">
@@ -960,9 +1385,9 @@ const logininitialValues = {
                                             name="password"
                                             type={ispasswordshow ? "password" : "text"}
                                             autoComplete="password"
-                                            onChange={Formik.handleChange}
-                                            onBlur={Formik.handleBlur}
-                                            value={Formik.values.password}
+                                            onChange={docFormik.handleChange}
+                                            onBlur={docFormik.handleBlur}
+                                            value={docFormik.values.password}
                                             required
                                             className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         />
@@ -970,8 +1395,8 @@ const logininitialValues = {
                                             {ispasswordshow ? <RemoveRedEyeIcon /> : <VisibilityOffIcon />}
                                         </div>
                                     </div>
-                                    {Formik.touched.password && Formik.errors.password ? (
-                                    <div style={{ color: 'red' }}>{Formik.errors.password}  
+                                    {docFormik.touched.password && docFormik.errors.password ? (
+                                    <div style={{ color: 'red' }}>{docFormik.errors.password}  
                                     <span>
                                      <Tooltip
                                     content={
@@ -1018,28 +1443,25 @@ const logininitialValues = {
                                     style={{background:'#0D7DFF' }}
                                     onClick={()=>{setpage((e)=>e-1)}}
                                         className="flex w-full justify-center rounded-md cursor-pointer  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    > Pre
+                                    > Back
                                     </span>
                                 )
                         }  
                            
                            {
-                            page==4 ?   <button
-                          
+                            page==5 ?  
+                             <button
                             style={{background:'#0D7DFF'}}
                                 type="submit"
                                 className="flex w-full justify-center rounded-md  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            > Send OTP
+                            > Register
                             </button> :    <span
                             style={{background:'#0D7DFF'}}
                             onClick={()=>{setpage((e)=>e+1)}}
                                 className="flex w-full justify-center rounded-md cursor-pointer  px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             > Next
                             </span>
-
                            }
-
-                         
                             </div>  
                         </CardFooter>
                         
@@ -1056,6 +1478,158 @@ const logininitialValues = {
         </div>
     );
 }
+
+
+
+
+// const SlotModal = ({ isOpen, onClose, selectedSlots, setSelectedSlots, slots }) => {
+//     const handleCheckboxChange = (event) => {
+//       const { name, checked } = event.target;
+//       if (checked) {
+//         setSelectedSlots((prevSlots) => [...prevSlots, name]);
+//       } else {
+//         setSelectedSlots((prevSlots) => prevSlots.filter((slot) => slot !== name));
+//       }
+//     };
+  
+//     if (!isOpen) return null;
+  
+//     return (
+//       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+//         <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+//           <h2 className="text-lg font-bold mb-4">Select Slots</h2>
+//           <div className="grid grid-cols-1 gap-2">
+//             {slots.map((slot) => (
+//               <label key={slot}>
+//                 <input
+//                   type="checkbox"
+//                   name={slot}
+//                   onChange={handleCheckboxChange}
+//                   checked={selectedSlots.includes(slot)}
+//                 />{' '}
+//                 {slot}
+//               </label>
+//             ))}
+//           </div>
+//           <button onClick={onClose} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">
+//             Close
+//           </button>
+//         </div>
+//       </div>
+//     );
+//   };
+
+    {/* {
+                            page==4 && (
+<>
+<div className="space-y-1">
+          <div className="flex flex-1 flex-row gap-2">
+            <div className="flex-1">
+              <label htmlFor="openingtime" className="block text-sm font-medium leading-6 text-gray-900">
+                Opening Timing
+              </label>
+              <div className="relative">
+                <Select
+                  id="openingtime"
+                  name="openingtime"
+                  options={options}
+                  onChange={(option) => docFormik.setFieldValue('openingtime', option?.value)}
+                  onBlur={docFormik.handleBlur}
+                  value={options.find((option) => option.value === docFormik.values.openingtime)}
+                  placeholder="Opening Time"
+                  classNamePrefix="react-select"
+                  aria-placeholder="openingtime"
+                />
+                {docFormik.touched.openingtime && docFormik.errors.openingtime ? (
+                  <div style={{ color: 'red' }}>{docFormik.errors.openingtime}</div>
+                ) : null}
+              </div>
+            </div>
+            <div className="flex-1">
+              <label htmlFor="closingtime" className="block text-sm font-medium leading-6 text-gray-900">
+                Closing Timing
+              </label>
+              <div className="relative">
+                <Select
+                  id="closingtime"
+                  name="closingtime"
+                  options={options}
+                  onChange={(option) => docFormik.setFieldValue('closingtime', option?.value)}
+                  onBlur={docFormik.handleBlur}
+                  value={options.find((option) => option.value === docFormik.values.closingtime)}
+                  placeholder="Closing Time"
+                  classNamePrefix="react-select"
+                  aria-placeholder="closingtime"
+                />
+                {docFormik.touched.closingtime && docFormik.errors.closingtime ? (
+                  <div style={{ color: 'red' }}>{docFormik.errors.closingtime}</div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <div>
+            <label htmlFor="slotdurationdata" className="block text-sm font-medium leading-6 text-gray-900">
+              Slot-Duration
+            </label>
+            <div className="relative">
+              <Select
+                id="slotdurationdata"
+                name="slotdurationdata"
+                options={durationdata}
+                onChange={(option) => docFormik.setFieldValue('slotdurationdata', option?.value)}
+                onBlur={docFormik.handleBlur}
+                value={durationdata.find((option) => option.value === docFormik.values.slotdurationdata)}
+                placeholder="Slot-Duration"
+                classNamePrefix="react-select"
+                aria-placeholder="slotdurationdata"
+              />
+              {docFormik.touched.slotdurationdata && docFormik.errors.slotdurationdata ? (
+                <div style={{ color: 'red' }}>{docFormik.errors.slotdurationdata}</div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          <div>
+            <label htmlFor="slot" className="block text-sm font-medium leading-6 text-gray-900">
+              Slot-Time
+            </label>
+            <div className="relative">
+              <input
+                id="slot"
+                name="slot"
+                type="text"
+                autoComplete="slot"
+                onClick={() => setModalOpen(true)}
+                onChange={docFormik.handleChange}
+                onBlur={docFormik.handleBlur}
+                value={docFormik.values.slot}
+                required
+                readOnly
+                className="block w-full rounded-md border-0 py-2 px-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              />
+              {docFormik.touched.slot && docFormik.errors.slot ? (
+                <div style={{ color: 'red' }}>{docFormik.errors.slot}</div>
+              ) : null}
+            </div>
+          </div>
+          <SlotModal
+            isOpen={isModalOpen}
+            onClose={handleModalClose}
+            selectedSlots={selectedSlots}
+            setSelectedSlots={setSelectedSlots}
+            slots={generatedSlots}
+          />
+        </div>
+</>
+
+                            )
+                          } */}
+
 
 // Export the LoginSign component
 export default LoginSign; 

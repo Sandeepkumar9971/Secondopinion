@@ -7,6 +7,18 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    Collage: {
+      type: String,
+      required: true,
+    },
+    yearofcompletion:{
+      type: String,
+      required: true,
+    },
+    specialization:{
+      type: String,
+      required: true,
+    },
     countryCode:{
       type:String,
       required:true
@@ -28,11 +40,25 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    url: {
-      type: String,
-      required: true
-    },
+  
     mobileNumber: {
+      type: String,
+      required: true,
+    },
+    
+    countryCode: {
+      type: String,
+      required: true,
+    },
+    Regisno: {
+      type: String,
+      required: true,
+    },
+    RegisCouncil: {
+      type: String,
+      required: true,
+    },
+    Regisyear: {
       type: String,
       required: true,
     },
@@ -55,7 +81,15 @@ const doctorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    gender: {
+      type: String,
+      required: true,
+    },
     city:  {
+      type: String,
+      required: true
+    },
+    state:  {
       type: String,
       required: true
     },
@@ -74,6 +108,10 @@ const doctorSchema = new mongoose.Schema(
     timings : {
       type: Array,
       required: true,
+    },
+    availableSlots: {
+      type: Map,
+      of: [String],
     },
     popular:{
       type: Boolean,

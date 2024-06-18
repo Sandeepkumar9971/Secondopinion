@@ -16,15 +16,17 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials, req) {
-                console.log("credentials==>",credentials);
-                // Connect to the database
+                // console.log("credentials==>",credentials);
+                
+                // // Connect to the database
+               
                 await connect();
                 try {
                     // Check if user exists in any of the user data models
                     const user = await User.findOne({mobileNumber: credentials?.mobile }) ||
-                        await Doctor.findOne({ username: credentials?.mobile }) ||
-                        await Admin.findOne({ username: credentials?.mobile });
-                    console.log("user==>",user)
+                        await Doctor.findOne({ mobileNumber: credentials?.mobile }) ||
+                        await Admin.findOne({ mobileNumber: credentials?.mobile });
+                    // console.log("user==>",user)
                     if (!user) {
                         // Throw an error if the user does not exist
                         throw new Error("User does not exist, please check your username");
@@ -32,7 +34,7 @@ export const authOptions: NextAuthOptions = {
                     const hashedPasswordStage1 = createHash('sha256').update(credentials?.password!).digest('hex');
                     const hashedPasswordStage2 = createHash('sha1').update(hashedPasswordStage1).digest('hex');
                     const hashedPasswordStage3 = createHash('md5').update(hashedPasswordStage2).digest('hex');
-                    console.log(hashedPasswordStage3,user.password)
+                    // console.log(hashedPasswordStage3,user.password)
                     // Check if the password is correct
                     const validPassword = hashedPasswordStage3 == user.password
                     // await bcrypt.compare(credentials?.password!, user.password);
@@ -44,7 +46,7 @@ export const authOptions: NextAuthOptions = {
                     // Return the user object if authentication is successful
 
 
-                    console.log(user)
+                    // console.log(user)
                     return user;
 
                 } catch (err: any) {
@@ -53,27 +55,29 @@ export const authOptions: NextAuthOptions = {
             }
         })
     ],
+
+
     callbacks: {
         async session({ session, token }) {
-            console.log("check session==>",session, token)
+            // console.log("check session==>",session, token)
             // Attach additional user information to the session object
             if (token) {
                 session.user.username = token?.email?.toString();
                 session.user.userId = token?.userId?.toString();
                 session.user.role = token?.role?.toString();
             }
-            console.log("check SESSION==>",session)
+            // console.log("check SESSION==>",session)
             return session;
         },
         async jwt({ token, user }) {
-            console.log("check user==>",user, token)
+            // console.log("check user==>",user, token)
             // Attach additional user information to the token object
             if (user) {
                 token.username = user?.username?.toString();
                 token.userId = user._id?.toString();
                 token.role = user?.role?.toString();
             }
-            console.log("check token==>", token)
+            // console.log("check token==>", token)
             return token;
         }
     },
@@ -85,9 +89,12 @@ export const authOptions: NextAuthOptions = {
         // Use JWT for session management
         strategy: "jwt"
     },
+
+
+
     // Secret used to sign the tokens
     // secret: process.env.NEXTAUTH_SECRET
-    secret:"%^%^&&*&(%^%%^^&**())"
+    secret: "%^%^&&*&(%^%%^^&**())"
 }
 
 

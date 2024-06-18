@@ -11,24 +11,31 @@ connect();
 export async function GET(request: NextRequest) {
     try {
         // Retrieve the userId from params
-        const pathname = request.nextUrl.pathname.split('/');
+        // const pathname = await request.nextUrl.pathname;
+        // console.log("pathname",pathname)
+        const pathname = await request.nextUrl.pathname.split('/');
         const userId = pathname[pathname.length - 1];
+        console.log("userId",userId)
+
 
         // Extract the token from the request cookies
         const token = request.cookies.get("token");
         
         // Check if token exists
-        if (!token) {
-            // Return a JSON response indicating token-related issue
-            return NextResponse.json({ message: "Token related issue", success: false });
-        }
+
+        // if (!token) {
+        //     // Return a JSON response indicating token-related issue
+        //     return NextResponse.json({ message: "Token related issue", success: false });
+        // }
         
         // Decode the token to get user information
-        const decodedToken = jwt.verify(token?.value, `${process.env.TOKEN_SECRET}`) as JwtPayload;
-        const { username, role } = decodedToken;
+        // const decodedToken = jwt.verify(token?.value, `${process.env.TOKEN_SECRET}`) as JwtPayload;
+        // const decodedToken = jwt.verify(token?.value, `${process.env.TOKEN_SECRET}`) as JwtPayload;
+        // const { username, role } = decodedToken;
 
         // Find the user user by userId
-        const user = await User.findOne({ _id: userId })
+        console.log("userId",userId)
+        const user = await User.findOne({ _id:userId})
 
         if(!user){
             // Return a JSON response indicating no doctor found with the given doctor ID

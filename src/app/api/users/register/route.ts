@@ -23,15 +23,14 @@ export async function POST(request: NextRequest) {
                 { mobileNumber: mobile },
                 { email: email }
             ]
-        }) || Doctor.findOne({
+        }) || await Doctor.findOne({
             $or: [
                 { mobileNumber: mobile },
                 { email: email }
             ]
         });
         if (userExists) {
-
-            return NextResponse.json({ message: "User already exists", success: false }, { status: 200 });
+            return NextResponse.json({ message: "Mobile/email already exists", success: false }, { status: 200 });
         }
 
         const hashedPasswordStage1 = createHash('sha256').update(password).digest('hex');

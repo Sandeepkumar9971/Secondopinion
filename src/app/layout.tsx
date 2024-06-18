@@ -6,6 +6,11 @@ import AuthProvider from '@/context/AuthProvider'
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import { StateProvider } from '@/context/dashboard/statereducer'
+import statereducer,{initialState } from '@/context/dashboard/Dashboardreducer'
+
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,12 +26,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+    <body className={inter.className}>
       <AuthProvider>
-        <body className={inter.className}>
-            {children}
+        <StateProvider initialState={initialState || {}} reducer={statereducer}>
+          {children}
           <Toaster />
-        </body>
+        </StateProvider>
       </AuthProvider>
-    </html>
+    </body>
+  </html>
   );
 }

@@ -11,7 +11,7 @@ export default function Layout({
   return (
     <div className="relative h-full overflow-hidden bg-background">
       <Sidebar
-        isCollapsed={isCollapsed}
+        isCollapsed={isCollapsed} 
         setIsCollapsed={setIsCollapsed}
         sidelinks={sidelinks}
       />

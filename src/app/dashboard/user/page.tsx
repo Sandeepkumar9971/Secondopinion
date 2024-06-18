@@ -19,21 +19,22 @@ import { RecentAppointments } from "../(components)/recent-appointments"; // Imp
 
 export default function User() {
   const router = useRouter();
-  const [user, setUser] = useState({}); // State to store user data
+  const [user, setUser] = useState({}); 
+  const { data: session } = useSession()
+
 
   useEffect(() => {
     // Function to fetch user data from the backend
     async function fetchDataFromBackend() {
       try {
-        const response = await axios.get(`/api/users/profile`);
-        console.log(response.data.user[0].allAppointments);
-        setUser(response.data.user[0]);
+        const response = await axios.get(`/api/users/profile/${session?.user?.userId}`);
+        setUser(response?.data?.user || {});
       } catch (err) {
         console.log(err);
       }
     }
     fetchDataFromBackend(); // Fetch data when the component mounts
-  }, []);
+  }, [session]);
 
   return (
     <Layout>
@@ -59,7 +60,7 @@ export default function User() {
                 </CardTitle>
                 <CardContent>
                   <div className="text-2xl font-bold py-5 text-white">
-                    {user?.username}.
+                    {user?.fullname}.
                   </div>
                   <p className="text-md text-muted-foreground pb-6 text-white">
                     Need a Specialist? No problem! Let's Find One for You.
@@ -126,7 +127,7 @@ export default function User() {
                   <CardTitle>Recent Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <RecentAppointments allAppointments={user.allAppointments} />
+                  <RecentAppointments allAppointments={user?.allAppointments} />
                 </CardContent>
               </Card>
             </div>

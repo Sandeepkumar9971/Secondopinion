@@ -33,5 +33,6 @@ export const countrydata = mongoose.models.countrydatas || mongoose.model('count
 
 const searchlistschema = new mongoose.Schema({
     fullname:String,
+    // 
 })
 export const searchlistdata = mongoose.models.doctors || mongoose.model('doctors',searchlistschema)

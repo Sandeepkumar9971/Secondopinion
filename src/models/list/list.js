@@ -29,3 +29,9 @@ const countryschema = new mongoose.Schema({
     id:Number
 })
 export const countrydata = mongoose.models.countrydatas || mongoose.model('countrydatas',countryschema)
+
+
+const searchlistschema = new mongoose.Schema({
+    fullname:String,
+})
+export const searchlistdata = mongoose.models.doctors || mongoose.model('doctors',searchlistschema)

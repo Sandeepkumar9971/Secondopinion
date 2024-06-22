@@ -3,6 +3,11 @@ export { default } from 'next-auth/middleware';
 import { getToken } from 'next-auth/jwt';
 import crypto from 'crypto';
 
+// function verifyCSRFToken(csrfToken, secret) {
+//     const [token, hash] = csrfToken.split('|');
+//     const expectedHash = crypto.createHash('sha256').update(`${token}${secret}`).digest('hex');
+//     return expectedHash === hash;
+// }
 
 export async function middleware(request: NextRequest) {
     // const token = await getToken({ req: request });
@@ -11,6 +16,19 @@ export async function middleware(request: NextRequest) {
     // console.log("role",role);
     // const url = request.nextUrl;
 
+    const token = await getToken({req:request,secret:"%^%^&&*&(%^%%^^&**())"});
+
+    const role = token?.role?.toString().toLowerCase();
+
+    const url = request.nextUrl;
+ 
+    let remainingPath = url.pathname.split("/")[3] || "";
+
+  if (
+    token &&
+    (url.pathname.startsWith("/login_signup") ||
+      url.pathname.startsWith("/dashboard"))
+  ) {
    
     // if (token && (url.pathname.startsWith('/login_signup') || url.pathname.startsWith('/dashboard'))) {
     //     // If user is already on their role-based dashboard, do not redirect

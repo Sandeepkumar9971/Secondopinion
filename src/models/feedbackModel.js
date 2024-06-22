@@ -25,7 +25,7 @@ const feedbackSchema = mongoose.model({
         required: true,
     },
     rating: {
-        type: Number,
+        type:Number,
         required: true
     }
 })

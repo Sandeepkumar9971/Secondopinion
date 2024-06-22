@@ -2,8 +2,9 @@ import React, { useState,useEffect } from 'react';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import { useRouter } from 'next/navigation';
 import {makeRequest} from '@/Utils/FatchData'
-import {special} from '@/Utils/Api_URL'
-import {decryptData} from '@/Utils/Sceret'
+import {special,search_Item} from '@/Utils/Api_URL'
+import {decryptData,encryptData} from '@/Utils/Sceret'
+
 
 const locations = [
   { id: 1, name: 'Dwarka' },
@@ -27,60 +28,91 @@ const locations = [
 //   { id: 9, name: 'Orthopedic Surgeon' },
 // ];
 
-const doctorsAndHospitals = [
-  { id: 1, name: 'Dr. John Doe - Cardiologist' },
-  { id: 2, name: 'Dr. Jane Smith - Orthopedic Surgeon' },
-  { id: 3, name: 'City Hospital' },
-  { id: 4, name: 'Community Health Center' },
-  { id: 5, name: 'Lakeview Dental Clinic' },
-];
+// const doctorsAndHospitals = [
+//   { id: 1, name: 'Dr. John Doe - Cardiologist' },
+//   { id: 2, name: 'Dr. Jane Smith - Orthopedic Surgeon' },
+//   { id: 3, name: 'City Hospital' },
+//   { id: 4, name: 'Community Health Center' },
+//   { id: 5, name: 'Lakeview Dental Clinic' },
+// ];
 
 
 
 
 
 const Searchbar = ({searchvalue}) => {
+  console.log(searchvalue);
+  const value = JSON.parse(decryptData(searchvalue?.spec))
   const [specialist,setspecialist] = useState([])
+  const [location, setLocation] = useState(searchvalue?.doc || 'Delhi');
+  const [searchTerm, setSearchTerm] = useState(value?.spec || '');
+  const [filteredSpecialties, setFilteredSpecialties] = useState(specialist);
+  const [filteredLocations, setFilteredLocations] = useState(locations);
+  const [doctorname,setdoctorname]=useState([])
+  const [showLocationList, setShowLocationList] = useState(false);
+  const [showSpecialtyList, setShowSpecialtyList] = useState(false);
   useEffect(()=>{
     try{
       makeRequest('get',special).then((data)=>{
         // console.log(data.data)
         let decryp = JSON.parse(decryptData(data.data))
-        console.log(decryp)
+        // console.log(decryp)
         setspecialist(decryp)
+        setFilteredSpecialties(decryp || [])
       })
+
+      makeRequest('get',search_Item).then((data)=>{
+        // console.log(data.data)
+        let decryp = JSON.parse(decryptData(data.data))
+        let modifiedData = decryp.map(result => ({
+          ...result,
+          spec:result.fullname,
+          id:result._id
+        }));
+        
+        // Log the modified data
+        console.log(modifiedData);
+        
+        setdoctorname(modifiedData)    
+      })
+      
     }
     catch(e){
       console.log(e)
     }
     
     },[])
-  console.log(searchvalue)
+  // console.log(searchvalue)
   const router = useRouter()
-  const [location, setLocation] = useState(searchvalue?.doc || 'Delhi');
-  const [searchTerm, setSearchTerm] = useState(searchvalue?.spec || '');
-  const [filteredSpecialties, setFilteredSpecialties] = useState(specialist);
-  const [filteredLocations, setFilteredLocations] = useState(locations);
-  const [showLocationList, setShowLocationList] = useState(false);
-  const [showSpecialtyList, setShowSpecialtyList] = useState(false);
-
+  
+  // console.log(searchTerm)
   const handleSearch = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
     setShowSpecialtyList(true);
     setShowLocationList(false);
     if (term.length > 0) {
+      // Filter the specialties based on the term
       const filteredSpecialties = specialist?.filter((specialty) =>
         specialty?.spec?.toLowerCase().includes(term.toLowerCase())
       );
-
-      const filteredDoctorsAndHospitals = doctorsAndHospitals.filter((result) =>
-        result.name.toLowerCase().includes(term.toLowerCase())
-      );
+    
+      // Filter the doctors and hospitals based on the term
+      const filteredDoctorsAndHospitals = doctorname?.filter((result) => {
+        console.log(result); // Log the result to debug
+        return result?.spec?.toLowerCase().includes(term.toLowerCase());
+      });
+    
+      console.log(filteredDoctorsAndHospitals); // Log the filtered results to debug
+    
+      // Combine the filtered specialties and doctors/hospitals
       const combinedResults = [...filteredSpecialties, ...filteredDoctorsAndHospitals];
-      console.log(combinedResults);   
-      setFilteredSpecialties(combinedResults.length > 0 ? combinedResults : [{ id: 0, name: 'No results found' }]);
+      // console.log(combinedResults); // Log the combined results to debug
+    
+      // Update the state with the combined results
+      setFilteredSpecialties(combinedResults.length > 0 ? combinedResults : [{ id: 0, spec: 'No results found' }]);
     } else {
+      // If no term, set the filtered specialties to the full list or an empty array
       setFilteredSpecialties(specialist || []);
     }
   };
@@ -123,7 +155,7 @@ const Searchbar = ({searchvalue}) => {
     console.log(specialist)
     setSearchTerm(specialist.spec);
     setShowSpecialtyList(false); 
-    router.push(`/searchdoctor/${location}/${specialist.spec}`) 
+    router.push(`/searchdoctor/${location}/${encryptData(JSON.stringify(specialist))}`) 
    
   }
   return (

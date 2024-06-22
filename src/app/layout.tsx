@@ -8,6 +8,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { StateProvider } from '@/context/dashboard/statereducer'
 import statereducer,{initialState } from '@/context/dashboard/Dashboardreducer'
+import LocationMap from '@/components/Location/Location'
 
 
 
@@ -29,6 +30,7 @@ export default function RootLayout({
     <body className={inter.className}>
       <AuthProvider>
         <StateProvider initialState={initialState || {}} reducer={statereducer}>
+        <LocationMap/>
           {children}
           <Toaster />
         </StateProvider>

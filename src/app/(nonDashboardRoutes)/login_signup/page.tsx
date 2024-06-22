@@ -401,7 +401,7 @@ const logininitialValues = {
             {/* Tabs for switching between Login and Register */}
             <Tabs defaultValue="login" className="w-[400px]">
                 {/* TabsList for displaying tab labels */}
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-3 border">
                     {/* Tab trigger for Login */}
                     <TabsTrigger value="login">Login</TabsTrigger>
                     {/* Tab trigger for Register */}

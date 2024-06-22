@@ -13,7 +13,7 @@ export default function SettingsProfile() {
       try {
         const response = await axios.get(`/api/doctors/profile`);
         // console.log(response)
-        setUser(response.data.doctor[0]);
+        setUser(response?.data?.doctor[0]);
       } catch (err) {
         console.log(err);
       }
@@ -29,8 +29,10 @@ export default function SettingsProfile() {
           This is how others will see you on the site.
         </p>
       </div>
-      <Separator className="my-4" />
-      <ProfileForm user={user} />
+      <Separator className="my-4"/>
+      <ProfileForm 
+      user={user} 
+      />
     </div>
   );
 }

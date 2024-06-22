@@ -10,28 +10,40 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Button } from '@material-tailwind/react';
 import Link from 'next/link';
-import {makeRequest} from '@/Utils/FatchData'
-import {search_URL} from '@/Utils/Api_URL'
+import { makeRequest } from '@/Utils/FatchData'
+import { search_URL } from '@/Utils/Api_URL'
+import { decryptData } from '@/Utils/Sceret'
 
 const Searchdocprofile = ({ searchvalue }) => {
-  console.log(searchvalue)
-  useEffect(()=>{
-    try{
-      makeRequest('get',`${search_URL}?data=${JSON.stringify(searchvalue)}`).then((resp)=>{
-        console.log(resp)
+  // console.log(searchvalue)
+  const [searchdata, setsearchdata] = useState([])
+  const [filtervalue,setfiltervalue] = useState(searchvalue)
+  useEffect(() => {
+    // setfiltervalue(searchvalue)
+    try {
+      makeRequest('get', `${search_URL}?data=${JSON.stringify(searchvalue)}`).then((resp) => {
+        console.log("data==>", resp.data)
+        // if(resp.command ==1){
+          const respdata = JSON.parse(decryptData(resp.data))
+          console.log(respdata)
+          setsearchdata(respdata)
+        // }
       })
     }
-    catch(e){
+    catch (e) {
       console.log(e)
     }
-  },[searchvalue])
+  }, [searchvalue])
+  
   // ///////////////////////////  State  ///////////////////////////
   const navRef = useRef(null);
   const mapRef = useRef(null);
   const [showSlots, setShowSlots] = useState(false);
   const [currentDateIndex, setCurrentDateIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [indexopen,setindexopen]=useState()
+  const [indexopen, setindexopen] = useState()
+  const [showfilter, setshowfilter] = useState(false)
+
 
 
   /////////////////////////// Data ///////////////////////////
@@ -65,84 +77,86 @@ const Searchdocprofile = ({ searchvalue }) => {
       name: 'Marathahalli'
     },
   ]
-  const data = [
-    {
-      id: 1,
-      docname: 'Dr. Venkatesh M J',
-      prof: 'Dentist',
-      exp: '29 years experience overall',
-      city: 'Indiranagar',
-      state: 'Bangalore',
-      carecenter: 'All Care Dental Centre since 1969 +1 more',
-      free: true,
-      fee: 1300,
-      consult: 'Consultation fee at clinic',
-      ratting: '70%',
-      stories: '3 Patient Stories',
-      Avaiable: 'Available Today',
-    },
-    {
-      id: 2,
-      docname: 'Dr. Venkatesh M J',
-      prof: 'Dentist',
-      exp: '29 years experience overall',
-      city: 'Indiranagar',
-      state: 'Bangalore',
-      carecenter: 'All Care Dental Centre since 1969 +1 more',
-      free: false,
-      fee: 430,
-      consult: 'Consultation fee at clinic',
-      ratting: '89%',
-      stories: '7 Patient Stories',
-      Avaiable: 'Available Today',
-    },
-    {
-      id: 3,
-      docname: 'Dr. Venkatesh M J',
-      prof: 'Dentist',
-      exp: '29 years experience overall',
-      city: 'Indiranagar',
-      state: 'Bangalore',
-      carecenter: 'All Care Dental Centre since 1969 +1 more',
-      free: true,
-      fee: 200,
-      consult: 'Consultation fee at clinic',
-      ratting: '89%',
-      stories: '7 Patient Stories',
-      Avaiable: 'Available Today',
-    },
-    {
-      id: 4,
-      docname: 'Dr. Venkatesh M J',
-      prof: 'Phycial',
-      exp: '2 years experience overall',
-      city: 'Indiranagar',
-      state: 'Delhi',
-      carecenter: 'All Care Dental Centre since 1969 +1 more',
-      free: true,
-      fee: 400,
-      consult: 'Consultation fee at clinic',
-      ratting: '80%',
-      stories: '3',
-      Avaiable: 'Available 6 June',
-    },
-    {
-      id: 5,
-      docname: 'Dr. Venkatesh M J',
-      prof: 'Dentist',
-      exp: '29 years experience overall',
-      city: 'Indiranagar',
-      state: 'Bangalore',
-      carecenter: 'All Care Dental Centre since 1969 +1 more',
-      free: true,
-      fee: 500,
-      consult: 'Consultation fee at clinic',
-      ratting: '89%',
-      stories: '7 Patient Stories',
-      Avaiable: 'Available Today',
-    },
 
-  ]
+
+  // const data = [
+  //   {
+  //     id: 1,
+  //     docname: 'Dr. Venkatesh M J',
+  //     prof: 'Dentist',
+  //     exp: '29 years experience overall',
+  //     city: 'Indiranagar',
+  //     state: 'Bangalore',
+  //     carecenter: 'All Care Dental Centre since 1969 +1 more',
+  //     free: true,
+  //     fee: 1300,
+  //     consult: 'Consultation fee at clinic',
+  //     ratting: '70%',
+  //     stories: '3 Patient Stories',
+  //     Avaiable: 'Available Today',
+  //   },
+  //   {
+  //     id: 2,
+  //     docname: 'Dr. Venkatesh M J',
+  //     prof: 'Dentist',
+  //     exp: '29 years experience overall',
+  //     city: 'Indiranagar',
+  //     state: 'Bangalore',
+  //     carecenter: 'All Care Dental Centre since 1969 +1 more',
+  //     free: false,
+  //     fee: 430,
+  //     consult: 'Consultation fee at clinic',
+  //     ratting: '89%',
+  //     stories: '7 Patient Stories',
+  //     Avaiable: 'Available Today',
+  //   },
+  //   {
+  //     id: 3,
+  //     docname: 'Dr. Venkatesh M J',
+  //     prof: 'Dentist',
+  //     exp: '29 years experience overall',
+  //     city: 'Indiranagar',
+  //     state: 'Bangalore',
+  //     carecenter: 'All Care Dental Centre since 1969 +1 more',
+  //     free: true,
+  //     fee: 200,
+  //     consult: 'Consultation fee at clinic',
+  //     ratting: '89%',
+  //     stories: '7 Patient Stories',
+  //     Avaiable: 'Available Today',
+  //   },
+  //   {
+  //     id: 4,
+  //     docname: 'Dr. Venkatesh M J',
+  //     prof: 'Phycial',
+  //     exp: '2 years experience overall',
+  //     city: 'Indiranagar',
+  //     state: 'Delhi',
+  //     carecenter: 'All Care Dental Centre since 1969 +1 more',
+  //     free: true,
+  //     fee: 400,
+  //     consult: 'Consultation fee at clinic',
+  //     ratting: '80%',
+  //     stories: '3 Patient Stories',
+  //     Avaiable: 'Available 6 June',
+  //   },
+  //   {
+  //     id: 5,
+  //     docname: 'Dr. Venkatesh M J',
+  //     prof: 'Dentist',
+  //     exp: '29 years experience overall',
+  //     city: 'Indiranagar',
+  //     state: 'Bangalore',
+  //     carecenter: 'All Care Dental Centre since 1969 +1 more',
+  //     free: true,
+  //     fee: 500,
+  //     consult: 'Consultation fee at clinic',
+  //     ratting: '89%',
+  //     stories: '7 Patient Stories',
+  //     Avaiable: 'Available Today',
+  //   },
+
+  // ]
 
   // ////////////////////// Funcation  //////////////////////
   const prevPage = () => {
@@ -164,7 +178,7 @@ const Searchdocprofile = ({ searchvalue }) => {
   const handlePreviousDate = () => {
     setCurrentDateIndex((prevIndex) => Math.max(prevIndex - 1, 0));
   };
-  
+
   useEffect(() => {
     const handleScroll = () => {
       if (navRef.current) {
@@ -187,12 +201,25 @@ const Searchdocprofile = ({ searchvalue }) => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-// ///////////////////////  Login Algo  ////////////////////////
+  // ///////////////////////  Login Algo  ////////////////////////
   const dataPerPage = 10;
   const indexOfLastData = currentPage * dataPerPage;
   const indexOfFirstData = indexOfLastData - dataPerPage;
-  const currentData = data?.slice(indexOfFirstData, indexOfLastData);
+  const currentData = searchdata?.slice(indexOfFirstData, indexOfLastData);
 
+  const handlefilter = (e) => {
+    console.log('funcation call')
+    const { name, value } = e.target;
+    setfiltervalue((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    console.log(filtervalue);
+  };
+
+  const slotavailable = (data)=>{
+    console.log(data)
+  }
 
   return (
     <>
@@ -205,85 +232,153 @@ const Searchdocprofile = ({ searchvalue }) => {
           <div ref={navRef} className="navbar">
             <div className='flex-1 flex-wrap'>
               <div className="filters">
-                <select className="filter-dropdown">
+                <select name='gender' onchange={handlefilter} className="filter-dropdown">
                   <option value="">Gender</option>
                   <option value="male">Male Doctor</option>
                   <option value="female">Female Doctor</option>
                 </select>
-                <select className="filter-dropdown">
+                <select className="filter-dropdown" onchange={handlefilter}>
                   <option value="">Patient Stories</option>
-                  <option value="positive">Positive</option>
-                  <option value="neutral">Neutral</option>
+                  <option value="10">10+ Stories</option>
+                  <option value="20">20+ Stories</option>
                 </select>
-                <select className="filter-dropdown">
+                <select className="filter-dropdown" onchange={handlefilter}>
                   <option value="">Experience</option>
                   <option value="1-5">1-5 years</option>
                   <option value="5-10">5-10 years</option>
+                  <option value="5-10">10-20 years</option>
+                  <option value="5-10">20-above years</option>
                 </select>
-                <select className="filter-dropdown">
-                  <option value="">All Filters</option>
-                  <option value="rating">Rating</option>
-                  <option value="availability">Availability</option>
-                </select>
-                <select className="filter-dropdown">
+                <div className="filter-dropdown" onClick={() => { setshowfilter((e) => !e) }}>
+                  All filter
+                </div>
+           
+                <select className="filter-dropdown" onchange={handlefilter}>
                   <option value="relevance">Sort By</option>
-                  <option value="price">Price</option>
-                  <option value="distance">Distance</option>
+                  <option value="story_high_to_low">Number of patient stories - High to low</option>
+                  <option value="Experience_high_to_low">Experience - High to Low</option>
+                  <option value="ConsultationFee_High_to_Low">Consultation Fee - High to Low</option>
+                  <option value="ConsultationFee_low_to_high">Consultation Fee - Low to High</option>
+
                 </select>
               </div>
+
+              
+                {
+                  showfilter && (
+                    <>
+                    <div className='flex flex-row flex-wrap flex-1 gap-10 p-5'>
+                      <div className='flex flex-col '>
+                        <h2>Fees</h2>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="fee" value="0-500" aria-label='fee' onchange={handlefilter}/>0-500
+
+                        </div>
+                        <div className='flex gap-1'>
+
+                        <input type="radio" name="fee" value="500-1000" onchange={handlefilter}/>500-above
+                        </div>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="fee" value="1000-2000" onchange={handlefilter}/>1000-above
+
+                        </div>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="fee" value="2000-0" onchange={handlefilter}/>2000-above
+
+                        </div>
+                      </div>
+                      <div className='flex flex-col '>
+                        <h2>Availability</h2>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="Availability" value="0-500" aria-label='fee' onchange={handlefilter}/>Available in next 4 hours
+                        </div>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="Availability" value="500-1000" onchange={handlefilter}/> Available Today
+
+                        </div>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="Availability" value="1000-2000" onchange={handlefilter}/>Available Tomorrow
+
+                        </div>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="Availability" value="2000-0" onchange={handlefilter}/>Available in next 7 days
+                        </div>
+       
+
+                      </div>
+                      <div className='flex flex-col '>
+                        <h2>Consult type</h2>
+                        <div className='flex gap-1'>
+                        <input type="radio" name="Consulttype" value="Video consult" onchange={handlefilter}/>Video consult
+                        </div>
+                      </div>
+                    </div>
+                    </>
+                  )
+                }
+
+
+            
+
             </div>
           </div>
           <div className="content">
             <div className="left">
               <img src='/DoctorListingBannerDWeb.jpg' alt='banner' />
               <div className='mt-3'>
-                <p className='text-3xl'>763 doctors available in Bangalore</p>
+                <p className='text-3xl'>{searchdata?.length || 0} doctors available in {searchvalue.doc}</p>
                 <p className='text-xl'><CheckCircleIcon style={{ color: 'gray' }} /> Book appointments with minimum wait-time & verified doctor details</p>
               </div>
               {
-                currentData?.map((data,index) => {
+                currentData?.map((data, index) => {
                   return (
                     <>
                       <div className="card">
                         <div className="left-section">
                           <img src="/offer-specialist-v1.png" alt="Doctor" className="doctor-image" />
-                          <Link href={`/doctorprofile/${data.id}`} className="badge">View Profile</Link>
+                          <Link href={`/doctorprofile/${data._id}`} className="badge">View Profile</Link>
+                          {/* <Link href={`/doctorprofile/${data.id}`} className="badge">View Profile</Link> */}
                         </div>
                         <div className="middle-section">
-                          <h2>{data.docname}</h2>
-                          <p className='text-left'>{data.prof}</p>
-                          <p className='text-left'>{data.exp} years experience overall</p>
+                          <h2>{data.fullname}</h2>
+                          <p className='text-left'>{data?.spcename[0]?.spec}</p>
+                          <p className='text-left'>{data.experience} years experience overall</p>
+                          <p className='text-left'>{data?.cityname[0]?.name}, {data?.statename[0].name} • {data?.carecenter}</p>
+                          <p className='text-left'><span className="free">{data.free ? 'FREE' : ''}</span> <span className={`${data.free ? 'fee' : 'text-lg text-bold'}`}>₹{data.feePerCunsultation}</span> {'Consultation fee at clinic'}</p>
+                          {/* <p className='text-left'>{data.prof}</p>
+                          <p className='text-left'>{data.exp}</p>
                           <p className='text-left'>{data.city}, {data.state} • {data.carecenter}</p>
-                          <p className='text-left'><span className="free">{data.free?'FREE':''}</span> <span className={`${data.free?'fee':'text-lg text-bold'}`}>₹{data.fee}</span> {data.consult}</p>
+                          <p className='text-left'><span className="free">{data.free?'FREE':''}</span> <span className={`${data.free?'fee':'text-lg text-bold'}`}>₹{data.fee}</span> {data.consult}</p> */}
                           <div className="rating">
                             <ThumbUpAltIcon style={{ color: 'green' }} />
-                            <span>{data.ratting}</span>
-                            <span className="stories">{data.stories} Patient Stories</span>
+                            <span>{data?.ratting || 100}%</span>
+                            <u className="stories">{data?.stories || 0} Patient Stories</u>
                           </div>
                         </div>
                         <div className="right-section">
                           <div className="available">
                             <CheckCircleIcon style={{ color: 'green' }} />
-                            <span>{data.Avaiable}</span>
+                            <span>{"Available Today"}</span>
+                            {/* <span>{data.Avaiable}</span> */}
                           </div>
-                          <button onClick={()=>handleBookClick(index)}>Book FREE Clinic Visit</button>
+                          <button onClick={() => handleBookClick(index)}>Book FREE Clinic Visit</button>
                         </div>
                       </div>
                       <div>
-                        {indexopen==index && showSlots && (
+                        {indexopen == index && showSlots && (
                           <div className="slots">
                             <div className="date-navigation">
                               <ArrowBackIosIcon onClick={handlePreviousDate} style={{ cursor: 'pointer' }} />
-                              <p>{dates[currentDateIndex]}<span style={{color:'green'}}> (3 Slot Available)</span></p>
-                             
+                              <p>{dates[currentDateIndex]}<span style={{ color: 'green' }}> (3 Slot Available)</span></p>
+
                               <ArrowForwardIosIcon onClick={handleNextDate} style={{ cursor: 'pointer' }} />
                             </div>
                             <div className="slot-section">
                               <div className="slot-category">
                                 <p className='text-left'>Morning</p>
                                 <div className="slot-times">
-                                  {slots.morning.map((time, index) => (
-                                    <span onClick={()=>alert(time)} key={index}>{time}</span>
+                                  {slots.morning.map((time,index) => (
+                                    <span onClick={() => alert(time)} key={index}>{time}</span>
                                   ))}
                                 </div>
                               </div>
@@ -291,7 +386,7 @@ const Searchdocprofile = ({ searchvalue }) => {
                                 <p className='text-left'>Afternoon</p>
                                 <div className="slot-times">
                                   {slots.afternoon.map((time, index) => (
-                                    <span onClick={()=>alert(time)} key={index}>{time}</span>
+                                    <span onClick={() => alert(time)} key={index}>{time}</span>
                                   ))}
                                 </div>
                               </div>
@@ -299,7 +394,7 @@ const Searchdocprofile = ({ searchvalue }) => {
                                 <p className='text-left'>Evening</p>
                                 <div className="slot-times">
                                   {slots.evening.map((time, index) => (
-                                    <span onClick={()=>alert(time)} key={index}>{time}</span>
+                                    <span onClick={() => alert(time)} key={index}>{time}</span>
                                   ))}
                                 </div>
                               </div>
@@ -307,7 +402,7 @@ const Searchdocprofile = ({ searchvalue }) => {
                                 <p className='text-left'>Night</p>
                                 <div className="slot-times">
                                   {slots.night.map((time, index) => (
-                                    <span onClick={()=>alert(time)} key={index}>{time}</span>
+                                    <span onClick={() => alert(time)} key={index}>{time}</span>
                                   ))}
                                 </div>
                               </div>
@@ -321,12 +416,7 @@ const Searchdocprofile = ({ searchvalue }) => {
               }
             </div>
             <div ref={mapRef} className="right">
-              {/* <MapContainer center={[12.9716, 77.5946]} zoom={13} style={{ height: '400px', width: '100%' }}>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-          </MapContainer> */}
+          
               <div className='bg-white p-4 shadow-lg border rounded-lg hover:shadow-sm transition duration-200 max-w-sm'>
                 <div>
                   <p className='text-blue-400 text-xl'>Provide current location to see Dentist near you</p>
@@ -335,14 +425,14 @@ const Searchdocprofile = ({ searchvalue }) => {
                 <div className="locations">
                   {
                     locationdata?.map((data, index) => {
-                      return <p onClick={()=>{alert(data.name)}} key={index}>{data.name}</p>
+                      return <p onClick={() => { alert(data.name) }} key={index}>{data.name}</p>
                     })
                   }
 
                 </div>
                 <div className='flex gap-2'>
-                  <Button onClick={()=>{alert('Search Location')}} style={{ background: '#fff', color: '#3F51B4' }}> Search Location</Button>
-                  <Button  onClick={()=>{alert('Current Location')}}  style={{ background: '#3F51B4' }}> Current Location</Button>
+                  <Button onClick={() => { alert('Search Location') }} style={{ background: '#fff', color: '#3F51B4' }}> Search Location</Button>
+                  <Button onClick={() => { alert('Current Location') }} style={{ background: '#3F51B4' }}> Current Location</Button>
                 </div>
               </div>
             </div>
@@ -605,22 +695,26 @@ const Searchdocprofile = ({ searchvalue }) => {
         </div>
       </div>
       <div>
-
-        <div className="flex justify-center p-5">
-          <nav className="flex space-x-2" aria-label="Pagination">
-            <button style={{ background: '#007BFF' }} onClick={prevPage} disabled={currentPage === 1} className="relative inline-flex items-center px-4 py-2 text-sm  border border-fuchsia-100 hover:border-themecolor text-white font-semibold cursor-pointer leading-5 rounded-md transition duration-150 ease-in-out focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10">
-              Previous
-            </button>
-            {[...Array(Math.ceil(data.length / dataPerPage)).keys()].map(number => (
-              <button style={{ background: '#007BFF' }} key={number} onClick={() => setCurrentPage(number + 1)} className={`relative inline-flex items-center px-4 py-2 text-sm font-medium ${currentPage === number + 1 ? 'text-white bg-themecolor border border-fuchsia-100 hover:border-themecolor' : 'text-yellow-700 bg-white border border-fuchsia-100 hover:bg-themecolor'} cursor-pointer leading-5 rounded-md transition duration-150 ease-in-out focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10`}>
-                {number + 1}
-              </button>
-            ))}
-            <button style={{ background: '#007BFF' }} onClick={nextPage} disabled={indexOfLastData >= data.length} className="relative inline-flex items-center px-4 py-2 text-sm bg-themecolor  border border-fuchsia-100 hover:border-violet-100 text-white font-semibold cursor-pointer leading-5 rounded-md transition duration-150 ease-in-out focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10">
-              Next
-            </button>
-          </nav>
-        </div>
+{
+  searchdata.length>0 && (
+    <div className="flex justify-center p-5">
+    <nav className="flex space-x-2" aria-label="Pagination">
+      <button style={{ background: '#007BFF' }} onClick={prevPage} disabled={currentPage === 1} className="relative inline-flex items-center px-4 py-2 text-sm  border border-fuchsia-100 hover:border-themecolor text-white font-semibold cursor-pointer leading-5 rounded-md transition duration-150 ease-in-out focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10">
+        Previous
+      </button>
+      {[...Array(Math.ceil(searchdata.length / dataPerPage)).keys()].map(number => (
+        <button style={{ background: '#007BFF' }} key={number} onClick={() => setCurrentPage(number + 1)} className={`relative inline-flex items-center px-4 py-2 text-sm font-medium ${currentPage === number + 1 ? 'text-white bg-themecolor border border-fuchsia-100 hover:border-themecolor' : 'text-yellow-700 bg-white border border-fuchsia-100 hover:bg-themecolor'} cursor-pointer leading-5 rounded-md transition duration-150 ease-in-out focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10`}>
+          {number + 1}
+        </button>
+      ))}
+      <button style={{ background: '#007BFF' }} onClick={nextPage} disabled={indexOfLastData >= searchdata.length} className="relative inline-flex items-center px-4 py-2 text-sm bg-themecolor  border border-fuchsia-100 hover:border-violet-100 text-white font-semibold cursor-pointer leading-5 rounded-md transition duration-150 ease-in-out focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10">
+        Next
+      </button>
+    </nav>
+  </div>
+  )
+}
+       
 
       </div>
     </>

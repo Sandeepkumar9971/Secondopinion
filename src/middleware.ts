@@ -10,11 +10,6 @@ import crypto from 'crypto';
 // }
 
 export async function middleware(request: NextRequest) {
-    // const token = await getToken({ req: request });
-    // console.log("token",token)
-    // const role = token?.role?.toString().toLowerCase();
-    // console.log("role",role);
-    // const url = request.nextUrl;
 
     const token = await getToken({req:request,secret:"%^%^&&*&(%^%%^^&**())"});
 
@@ -30,22 +25,25 @@ export async function middleware(request: NextRequest) {
       url.pathname.startsWith("/dashboard"))
   ) {
    
-    if (token && (url.pathname.startsWith('/login_signup') || url.pathname.startsWith('/dashboard'))) {
-        // If user is already on their role-based dashboard, do not redirect
-        if (url.pathname !== `/dashboard/${role}`) {
-            return NextResponse.redirect(new URL(`/dashboard/${role}`, request.url));
-        }
+    if (!url.pathname.startsWith(`/dashboard/${role}`)) {
+      return NextResponse.redirect(
+        new URL(`/dashboard/${role}/${remainingPath}`, request.url)
+      );
     }
-
-    if (!token && url.pathname.startsWith('/dashboard')) {
-        return NextResponse.redirect(new URL('/login_signup', request.url));
-    }
+  }
 
 
+  if (!token && url.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login_signup", request.url));
+  }
+
+    
+
+    // Continue with the request if no redirection is needed
     return NextResponse.next();
 }
-}
 
+// Specify the paths where the middleware should be applied
 export const config = {
     matcher: [
         '/login_signup',

@@ -20,9 +20,9 @@ const DialogDefault = ({ dialogTitle, children, isOpen, handleOpen, handleClose,
     {children}
   </DialogBody>
         {buttonRequired && (
-          <DialogFooter>
+          <DialogFooter className="flex gap-2">
             <Button  variant="gradient" 
-            color="themecolor"
+            color="red"
             onClick={handleClose} 
             className="tracking-wider border-2 mr-1 cursor-pointer"
             >
@@ -30,7 +30,9 @@ const DialogDefault = ({ dialogTitle, children, isOpen, handleOpen, handleClose,
               <span>Close</span>
             </Button>
             
-            <Button variant="gradient" color="themecolor" onClick={handleConfirm} className="cursor-pointer">
+            <Button variant="gradient"
+             color="blue"
+              onClick={handleConfirm} className="cursor-pointer ">
               <span>Apply</span>
             </Button>
           </DialogFooter>

@@ -44,7 +44,7 @@ console.log(session);
         {
             id: 3,
             name: "Help Security",
-            path: '/help_security'
+            path: '/help_security',
         },
 
     ]

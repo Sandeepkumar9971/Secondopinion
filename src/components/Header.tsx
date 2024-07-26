@@ -82,7 +82,6 @@ console.log(session);
         )
     }
 
-    // Render header for unauthenticated users
     return (
         <div className='flex items-center justify-between p-4 shadow-sm'>
             <div className='flex items-center gap-10 cursor-pointer'>

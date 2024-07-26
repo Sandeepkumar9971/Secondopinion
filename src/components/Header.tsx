@@ -34,7 +34,7 @@ console.log(session);
         {
             id: 1,
             name: "Find doctor",
-            path: '/find_doctor'
+            path: '/find_doctor',
         },
         {
             id: 2,

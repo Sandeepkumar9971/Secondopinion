@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials, req) {
-                // console.log("credentials==>",credentials);
+                console.log("credentials==>",credentials);
                 
                 // // Connect to the database
                
@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
                     const user = await User.findOne({mobileNumber: credentials?.mobile }) ||
                         await Doctor.findOne({ mobileNumber: credentials?.mobile }) ||
                         await Admin.findOne({ mobileNumber: credentials?.mobile });
-                    // console.log("user==>",user)
+                    console.log("user==>",user)
                     if (!user) {
                         // Throw an error if the user does not exist
                         throw new Error("User does not exist, please check your username");
